@@ -3,7 +3,10 @@
 		<header class="blink-header d-flex align-items-center">
 
 			<div class="logo-wrapper">
-				<svgo-luna-logo class="logo" />
+				<template v-if="blink && blink.logo">
+					<img :src="blink.logo" alt="Logo" class="header-custom-logo" />
+				</template>
+				<svgo-luna-logo v-else class="logo" />
 			</div>
 
 			<div class="header-tools d-flex ms-auto align-items-center justify-content-end gap-2">
@@ -86,6 +89,10 @@
 					display: flex
 
 			.logo
+				width: auto
+				height: 40px
+
+			.header-custom-logo
 				width: auto
 				height: 40px
 

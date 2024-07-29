@@ -62,7 +62,7 @@
 									<template #default>
 										<p v-if="!customLogo" class="mb-0 text-center">Drop an logo here</p>
 										<div v-else class="custom-icon">
-											<img alt="" :src="customLogo">
+											<img class="custom-logo" alt="" :src="customLogo">
 											<a href="#" class="remove" @click="customLogo = ''">
 												<icon name="material-symbols:delete-forever-rounded" />
 											</a>
@@ -392,13 +392,16 @@
 	};
 
 	watch(customIcon, (value) => {
-		console.log(value);
 		if(value) {
 			originalIcon.value = blink.value.icon;
 			blink.value.icon = value;
 		} else {
 			blink.value.icon = originalIcon.value;
 		}
+	});
+
+	watch(customLogo, (value) => {
+		blink.value.logo = value;
 	});
 
 	watch(blinkLink, async (value) => {
@@ -488,10 +491,18 @@
 			customBackground = blink.value.backgroundColor;
 		}
 
-		extraParams = {
+		if(customBackground) {
+
+			extraParams = {
+				...extraParams,
+				background: customBackground
+			};
+		}
+
+		extraParams = originalBlink.value.logo !== blink.value.logo ? {
 			...extraParams,
-			background: customBackground,
-		};
+			logo: blink.value.logo,
+		} : extraParams;
 
 		extraParams = originalBlink.value.icon !== blink.value.icon ? {
 			...extraParams,
@@ -638,6 +649,9 @@
 								object-fit: cover
 								aspect-ratio: 1
 
+								&.custom-logo
+									object-fit: contain
+
 							.remove
 								position: absolute
 								background: $danger
@@ -650,6 +664,13 @@
 								justify-content: center
 								width: 1.5rem
 								height: 1.5rem
+
+		.generate-actions
+			position: sticky
+			bottom: 0
+			border-top: 1px solid var(--bs-border-color)
+			background: var(--bs-body-bg)
+			padding: 1rem 0
 
 		.custom-background-image
 			position: relative
