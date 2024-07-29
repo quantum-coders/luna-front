@@ -16,6 +16,11 @@
 			</div>
 
 			<div class="blink-actions gap-2 d-flex flex-wrap" v-else>
+				<div class="alert alert-success" v-if="txResult">
+					<a :href="txResult" target="_blank">
+						Go to transaction
+					</a>
+				</div>
 				<article class="action" v-for="a in blink.links.actions">
 					<template v-if="!a.parameters">
 						<button
@@ -78,6 +83,7 @@
 
 <script setup>
 
+	const txResult = ref('');
 	const props = defineProps({
 		blinkUrl: {
 			type: String,
@@ -161,15 +167,12 @@
 			}),
 		});
 
-		console.log('before');
 		if(res.error.value) {
 			console.error(res.error.value);
 			action.loading = false;
 			return;
 		}
-		console.log('after');
-		await useSolanaStore().signEncodedTransaction(res.data.value.transaction);
-
+		txResult.value  = await useSolanaStore().signEncodedTransaction(res.data.value.transaction);
 		action.loading = false;
 	};
 

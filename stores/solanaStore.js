@@ -6,6 +6,7 @@ export const useSolanaStore = defineStore('solanaStore', () => {
 
 	const wallet = ref('');
 
+	const { successToast, errorToast } = usePrettyToast()
 	const signEncodedTransaction = async (encodedTransaction) => {
 		const { Buffer } = await import('buffer');
 		let provider;
@@ -29,19 +30,23 @@ export const useSolanaStore = defineStore('solanaStore', () => {
 
 		let transaction = Transaction.from(Buffer.from(encodedTransaction, 'base64'));
 		console.log('Signing tx', transaction);
-		const tx = await provider.signAndSendTransaction(transaction);
-		console.log('tx', tx);
+		try {
+			const tx = await provider.signAndSendTransaction(transaction);
+			console.log('tx', tx);
 
-		const confirmTransaction = await connection.confirmTransaction(tx,
-			{
-				commitment: 'confirmed',
-				skipPreflight: true,
-			},
-		);
-
-		console.log('Transaction confirmed', confirmTransaction);
-
-		return confirmTransaction;
+			const confirmTransaction = await connection.confirmTransaction(tx,
+				{
+					commitment: 'confirmed',
+					skipPreflight: true,
+				},
+			);
+			successToast('Transaction confirmed');
+			return `https://solscan.io/tx/${tx.signature}`
+		}catch(e) {
+			console.error('Error signing transaction', e);
+			errorToast('Error signing transaction: ' + e);
+			return null;
+		}
 	};
 	return {
 		wallet,
