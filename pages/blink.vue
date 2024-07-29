@@ -16,7 +16,7 @@
 
 		</header>
 		<div class="the-blink" v-if="blink">
-			<solana-blink :blink-object="blink" />
+			<solana-blink :blink-object="blink" :blink-url="b" :primaryColor="blink.primaryColor" />
 		</div>
 	</div>
 </template>
@@ -39,10 +39,15 @@
 
 		const vars = {};
 
+		if(blink.value.primaryColor) {
+			vars['--bs-btn-bg'] = blink.value.primaryColor;
+		}
+
 		if(blink.value.background) {
 			vars['--blink-background'] = blink.value.background;
 			vars['--blink-header-background'] = 'var(--bs-body-bg-rgb)';
 		}
+
 
 		return vars;
 	});

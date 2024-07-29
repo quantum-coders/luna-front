@@ -73,6 +73,12 @@
 
 							<div class="flex-grow-1">
 								<div class="form-group mb-3">
+									<label for="color" class="form-label">Primary Color</label>
+									<platform-color-input v-model="blink.primaryColor" />
+								</div>
+
+
+								<div class="form-group mb-3">
 									<label for="color" class="form-label">Background Color</label>
 									<platform-color-input v-model="blink.backgroundColor" />
 								</div>
@@ -307,6 +313,39 @@
 												/>
 											</div>
 										</div>
+
+										<div class="form-group mb-3">
+											<div class="d-flex align-items-center justify-content-between">
+												<label for="description" class="form-label">
+													Predefined value for
+													<code>{{ p.name }}</code>
+												</label>
+
+												<div class="labels d-flex gap-3">
+													<platform-toggle-switch
+														class="d-flex align-items-center gap-2"
+														v-model="p.hidden"
+													>
+														<template #preSwitch>Hidden</template>
+													</platform-toggle-switch>
+													<platform-toggle-switch
+														class="d-flex align-items-center gap-2"
+														v-model="p.readOnly"
+													>
+														<template #preSwitch>Read-only</template>
+													</platform-toggle-switch>
+												</div>
+											</div>
+											<div class="input-group">
+												<input
+													type="text"
+													id="description"
+													class="form-control flex-grow-1"
+													:placeholder="`Predefined Value for '${ p.name }'`"
+													v-model="p.value"
+												/>
+											</div>
+										</div>
 									</div>
 								</template>
 							</div>
@@ -495,9 +534,14 @@
 
 			extraParams = {
 				...extraParams,
-				background: customBackground
+				background: customBackground,
 			};
 		}
+
+		extraParams = originalBlink.value.primaryColor !== blink.value.primaryColor ? {
+			...extraParams,
+			primaryColor: blink.value.primaryColor,
+		} : extraParams;
 
 		extraParams = originalBlink.value.logo !== blink.value.logo ? {
 			...extraParams,
@@ -549,6 +593,27 @@
 					extraParams = {
 						...extraParams,
 						[`p[${ p.name }][postLabel]`]: blink.value.links.actions[0].parameters.find((param) => param.name === p.name).postLabel,
+					};
+				}
+
+				if(p.value !== blink.value.links.actions[0].parameters.find((param) => param.name === p.name).value) {
+					extraParams = {
+						...extraParams,
+						[`p[${ p.name }][value]`]: blink.value.links.actions[0].parameters.find((param) => param.name === p.name).value,
+					};
+				}
+
+				if(p.hidden !== blink.value.links.actions[0].parameters.find((param) => param.name === p.name).hidden) {
+					extraParams = {
+						...extraParams,
+						[`p[${ p.name }][hidden]`]: blink.value.links.actions[0].parameters.find((param) => param.name === p.name).hidden,
+					};
+				}
+
+				if(p.readOnly !== blink.value.links.actions[0].parameters.find((param) => param.name === p.name).readOnly) {
+					extraParams = {
+						...extraParams,
+						[`p[${ p.name }][readOnly]`]: blink.value.links.actions[0].parameters.find((param) => param.name === p.name).readOnly,
 					};
 				}
 			}

@@ -1,5 +1,8 @@
 <template>
-	<div class="blink-card-wrapper">
+	<div class="blink-card-wrapper" :style="{ '--blink-primary-color': primaryColor || '#69F89B' }">
+
+		<pre>{{ blink }}</pre>
+
 		<div class="blink-card" v-if="blink" :class="mode">
 
 			<div class="blink-image mb-2">
@@ -31,7 +34,7 @@
 						<div class="input-group">
 							<template v-for="p in a.parameters">
 								<!-- label -->
-								<div class="d-flex flex-grow-1">
+								<div class="d-flex flex-grow-1" v-if="!p.hidden">
 									<span
 										v-if="!!p.preLabel"
 										class="input-group-text"
@@ -44,6 +47,7 @@
 										v-model="p.value"
 										:name="p.name"
 										:disabled="a.loading"
+										:readonly="!!p.readOnly"
 									/>
 									<span
 										v-if="!!p.postLabel"
@@ -56,6 +60,7 @@
 								class="btn btn-primary"
 								:class="{ 'btn-loading': a.loading }"
 								@click="postBlink(a)"
+								:disabled="solveButtonDisabled(a)"
 							>{{ a.label }}
 							</button>
 						</div>
@@ -79,7 +84,7 @@
 	const props = defineProps({
 		blinkUrl: {
 			type: String,
-			default: '',
+			required: true,
 		},
 		blinkObject: {
 			type: Object,
@@ -92,6 +97,10 @@
 		parameters: {
 			type: Object,
 			default: () => ({}),
+		},
+		primaryColor: {
+			type: String,
+			default: '',
 		},
 	});
 
@@ -109,6 +118,17 @@
 		blink.value = res.data.value;
 	};
 
+	const solveButtonDisabled = (action) => {
+		if(action.parameters) {
+			for(const p of action.parameters) {
+				if(p.required && !p.value) {
+					return true;
+				}
+			}
+		}
+		return false;
+	};
+
 	const postBlink = async (action) => {
 
 		action.loading = true;
@@ -116,21 +136,26 @@
 
 		// if action.href does not start with http, use the domain from b
 		if(!action.href.startsWith('http')) {
-			url = new URL(action.href, props.blinkUrl).href;
+			console.log(useRuntimeConfig().public.baseURL + action.href, props.blinkUrl || {});
+			url = new URL(useRuntimeConfig().public.baseURL + action.href, props.blinkUrl).href;
 		} else {
 			url = action.href;
 		}
+
+		console.log(url);
 
 		// if parameters are present
 		if(action.parameters) {
 			// loop through the parameters
 			for(const p of action.parameters) {
-				console.log(p.name, p[p.name]);
+				console.log(p.name, p.value);
 				// replace the parameter in the url
-				url = url.replace(`%7B${ p.name }%7D`, p[p.name]);
-				url = url.replace(`{${ p.name }}`, p[p.name]);
+				url = url.replace(`%7B${ p.name }%7D`, p.value);
+				url = url.replace(`{${ p.name }}`, p.value);
 			}
 		}
+
+		console.log(url);
 
 		const res = await useFetch(url, {
 			method: 'POST',
@@ -158,6 +183,10 @@
 
 <!--suppress SassScssResolvedByNameOnly -->
 <style lang="sass" scoped>
+
+	.btn.btn-primary
+		background: var(--blink-primary-color, #69F89B)
+		border-color: var(--blink-primary-color, #69F89B)
 
 	.blink-card-wrapper
 		container-type: inline-size
