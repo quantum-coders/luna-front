@@ -1,8 +1,5 @@
 <template>
 	<div class="blink-card-wrapper" :style="{ '--blink-primary-color': primaryColor || '#69F89B' }">
-
-		<pre>{{ blink }}</pre>
-
 		<div class="blink-card" v-if="blink" :class="mode">
 
 			<div class="blink-image mb-2">
