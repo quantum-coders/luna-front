@@ -1,5 +1,5 @@
 <template>
-	<div class="blink-wrapper d-flex flex-column flex-grow-1">
+	<div class="blink-wrapper d-flex flex-column flex-grow-1" :style="cssVars">
 		<header class="blink-header d-flex align-items-center">
 
 			<div class="logo-wrapper">
@@ -12,8 +12,8 @@
 			</div>
 
 		</header>
-		<div class="the-blink">
-			<solana-blink :blink-url="b" />
+		<div class="the-blink" v-if="blink">
+			<solana-blink :blink-object="blink" />
 		</div>
 	</div>
 </template>
@@ -23,18 +23,46 @@
 	// get the b parameter from the query string
 	const { query } = useRoute();
 	const b = query.b;
+	const blink = ref(null);
+
+	const fetchBlink = async () => {
+		const res = await useFetch(b);
+		blink.value = res.data.value;
+	};
+
+	const cssVars = computed(() => {
+
+		if(!blink.value) return {};
+
+		const vars = {};
+
+		if(blink.value.background) {
+			vars['--blink-background'] = blink.value.background;
+			vars['--blink-header-background'] = 'var(--bs-body-bg-rgb)';
+		}
+
+		return vars;
+	});
+
+	onMounted(() => {
+		fetchBlink();
+	});
 
 </script>
 
 <!--suppress SassScssResolvedByNameOnly -->
 <style lang="sass" scoped>
+	.blink-wrapper
+		background: var(--blink-background, var(--bs-body-bg-rgb))
+
 	.blink-header
-		padding: 1rem
+		padding: 0.5rem 1rem
 		position: fixed
 		top: 0
 		left: 0
 		width: 100%
 		z-index: 1000
+		background: rgba(var(--blink-header-background, transparent), 1)
 
 		.logo-wrapper
 			display: flex
