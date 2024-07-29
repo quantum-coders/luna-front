@@ -23,7 +23,9 @@ export const useSolanaStore = defineStore('solanaStore', () => {
 			return;
 		}
 
-		const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
+		console.log("useRuntimeConfig().public.solanaRPC", useRuntimeConfig().public.solanaRPC)
+
+		const connection = new Connection(useRuntimeConfig().public.solanaRPC, 'confirmed');
 
 		let transaction = Transaction.from(Buffer.from(encodedTransaction, 'base64'));
 		console.log('Signing tx', transaction);

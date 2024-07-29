@@ -74,6 +74,7 @@ export default defineNuxtConfig({
 		public: {
 			baseURL: process.env.BASE_URL || 'http://localhost:1337',
 			appURL: process.env.APP_URL || 'http://localhost:3000',
+			solanaRPC: process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com',
 		},
 	},
 	vite: {
