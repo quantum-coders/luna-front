@@ -31,9 +31,9 @@
 						<div class="input-group">
 							<template v-for="p in a.parameters">
 								<!-- label -->
-								<div class="d-flex">
+								<div class="d-flex flex-grow-1">
 									<span
-										v-if="p.preLabel"
+										v-if="!!p.preLabel"
 										class="input-group-text"
 										id="basic-addon1"
 									>{{ p.preLabel }}</span>
@@ -46,7 +46,7 @@
 										:disabled="a.loading"
 									/>
 									<span
-										v-if="p.postLabel"
+										v-if="!!p.postLabel"
 										class="input-group-text"
 										id="basic-addon1"
 									>{{ p.postLabel }}</span>
@@ -288,4 +288,55 @@
 				& > *:last-child
 					margin: 0
 					border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius) !important
+
+		@container (min-width: 501px)
+
+			.action .input-group
+				gap: 0
+
+				& > *
+					margin: 0 !important
+
+				& > div:first-child > .form-control
+					border-radius: var(--bs-border-radius) 0 0 var(--bs-border-radius)
+					border-right: 0
+
+				& > div:first-child > .input-group-text:first-child
+					border-radius: var(--bs-border-radius) 0 0 var(--bs-border-radius)
+					border-right: 0
+
+				& > div:first-child > .input-group-text:last-child
+					border-radius: 0
+					border-right: 0
+
+				& > div:first-child:has(.input-group-text:first-child) > .form-control
+					border-radius: 0 var(--bs-border-radius) var(--bs-border-radius) 0
+					border-right: 0
+
+				& > div:first-child:has(.input-group-text:last-child) > .form-control
+					border-radius: var(--bs-border-radius) 0 0 var(--bs-border-radius)
+					border-right: 0
+
+				& > div:first-child:has(.input-group-text:first-child):has(.input-group-text:last-child) > .form-control
+					border-radius: 0
+					border-right: 0
+
+				& > div:not(:last-child):not(:first-child) > .form-control
+					width: 100%
+					flex-grow: 1
+					border-radius: 0
+					border-right: 0
+
+				& > div:not(:last-child):not(:first-child) > .input-group-text:first-child
+					border-radius: 0
+					border-right: 0
+
+				& > div:not(:last-child):not(:first-child) > .input-group-text:last-child
+					border-radius: 0
+					border-right: 0
+
+				& > div:last-child > .form-control,
+				& > *:last-child
+					margin: 0
+					border-radius: 0 var(--bs-border-radius) var(--bs-border-radius) 0 !important
 </style>
