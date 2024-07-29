@@ -50,8 +50,8 @@
 
 					<div class="blink-form" v-if="blink">
 						<h5>Page Branding</h5>
-						<div class="d-flex align-items-center gap-3 mb-3">
-							<div class="icon-upload-wrapper">
+						<div class="d-flex align-items-start gap-3 mb-3">
+							<div class="icon-upload-wrapper mt-4">
 								<platform-file-upload
 									ref="logoImageRef"
 									accept="image/jpeg,image/png"

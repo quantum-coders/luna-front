@@ -16,7 +16,9 @@
 
 		</header>
 		<div class="the-blink" v-if="blink">
-			<solana-blink :blink-object="blink" :blink-url="b" :primaryColor="blink.primaryColor" />
+			<solana-emoji-rain class="emoji-rain" :emojis="['⭐', '✨', '🌟', '🌙']" :speed="10" :density="50" :spawn="success" />
+
+			<solana-blink :blink-object="blink" :blink-url="b" :primaryColor="blink.primaryColor" @transaction-successful="transactionSuccessful" />
 		</div>
 	</div>
 </template>
@@ -27,6 +29,8 @@
 	const { query } = useRoute();
 	const b = query.b;
 	const blink = ref(null);
+
+	const success = ref(false);
 
 	const fetchBlink = async () => {
 		const res = await useFetch(b);
@@ -48,9 +52,17 @@
 			vars['--blink-header-background'] = 'var(--bs-body-bg-rgb)';
 		}
 
-
 		return vars;
 	});
+
+	const transactionSuccessful = () => {
+		success.value = true;
+
+		// wait 5 seconds and then reset the success state
+		setTimeout(() => {
+			success.value = false;
+		}, 5000);
+	};
 
 	onMounted(() => {
 		fetchBlink();
@@ -60,10 +72,14 @@
 
 <!--suppress SassScssResolvedByNameOnly -->
 <style lang="sass" scoped>
+	.emoji-rain
+		z-index: 0
+
 	.blink-wrapper
 		background: var(--blink-background, var(--bs-body-bg-rgb))
 
 	.blink-header
+
 		padding: 0.5rem 1rem
 		position: fixed
 		top: 0

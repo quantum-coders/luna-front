@@ -1,5 +1,6 @@
 <template>
 	<div class="blink-card-wrapper" :style="{ '--blink-primary-color': primaryColor || '#69F89B' }">
+
 		<div class="blink-card" v-if="blink" :class="mode">
 
 			<div class="blink-image mb-2">
@@ -16,58 +17,61 @@
 			</div>
 
 			<div class="blink-actions gap-2 d-flex flex-wrap" v-else>
-				<div class="alert alert-success" v-if="txResult">
-					<a :href="txResult" target="_blank">
-						Go to transaction
-					</a>
+				<div class="alert alert-success w-100 text-center" v-if="txResult">
+					Great, transaction was successful. <a :href="txResult" target="_blank">Go to transaction</a>
 				</div>
-				<article class="action" v-for="a in blink.links.actions">
-					<template v-if="!a.parameters">
-						<button
-							@click.prevent="postBlink(a)"
-							class="btn btn-primary w-100 solo-action"
-							:class="{ 'btn-loading': a.loading }"
-						>{{ a.label }}
-						</button>
-					</template>
-
-					<template v-else>
-						<!-- input group -->
-						<div class="input-group">
-							<template v-for="p in a.parameters">
-								<!-- label -->
-								<div class="d-flex flex-grow-1" v-if="!p.hidden">
-									<span
-										v-if="!!p.preLabel"
-										class="input-group-text"
-										id="basic-addon1"
-									>{{ p.preLabel }}</span>
-									<input
-										type="text"
-										class="form-control"
-										:placeholder="p.label"
-										v-model="p.value"
-										:name="p.name"
-										:disabled="a.loading"
-										:readonly="!!p.readOnly"
-									/>
-									<span
-										v-if="!!p.postLabel"
-										class="input-group-text"
-										id="basic-addon1"
-									>{{ p.postLabel }}</span>
-								</div>
-							</template>
+				<template v-for="a in blink.links.actions">
+					<article
+						class="action"
+						:class="`parameters-count-${ a.parameters.length }`"
+					>
+						<template v-if="!a.parameters">
 							<button
-								class="btn btn-primary"
+								@click.prevent="postBlink(a)"
+								class="btn btn-primary w-100 solo-action"
 								:class="{ 'btn-loading': a.loading }"
-								@click="postBlink(a)"
-								:disabled="solveButtonDisabled(a)"
 							>{{ a.label }}
 							</button>
-						</div>
-					</template>
-				</article>
+						</template>
+
+						<template v-else>
+							<!-- input group -->
+							<div class="input-group">
+								<template v-for="p in a.parameters">
+									<!-- label -->
+									<div class="d-flex flex-grow-1" v-if="!p.hidden">
+										<span
+											v-if="!!p.preLabel"
+											class="input-group-text"
+											id="basic-addon1"
+										>{{ p.preLabel }}</span>
+										<input
+											type="text"
+											class="form-control"
+											:placeholder="p.label"
+											v-model="p.value"
+											:name="p.name"
+											:disabled="a.loading"
+											:readonly="!!p.readOnly"
+										/>
+										<span
+											v-if="!!p.postLabel"
+											class="input-group-text"
+											id="basic-addon1"
+										>{{ p.postLabel }}</span>
+									</div>
+								</template>
+								<button
+									class="btn btn-primary"
+									:class="{ 'btn-loading': a.loading }"
+									@click="postBlink(a)"
+									:disabled="solveButtonDisabled(a)"
+								>{{ a.label }}
+								</button>
+							</div>
+						</template>
+					</article>
+				</template>
 			</div>
 
 			<p class="powered">
@@ -82,8 +86,10 @@
 </template>
 
 <script setup>
-
 	const txResult = ref('');
+
+	const emit = defineEmits([ 'transactionSuccessful' ]);
+
 	const props = defineProps({
 		blinkUrl: {
 			type: String,
@@ -172,7 +178,9 @@
 			action.loading = false;
 			return;
 		}
-		txResult.value  = await useSolanaStore().signEncodedTransaction(res.data.value.transaction);
+
+		txResult.value = await useSolanaStore().signEncodedTransaction(res.data.value.transaction);
+		emit('transactionSuccessful', txResult.value);
 		action.loading = false;
 	};
 
@@ -270,7 +278,7 @@
 			.blink-card.compact .blink-image
 				width: 80px
 
-			.action .input-group
+			.action:not(.parameters-count-1) .input-group
 				flex-direction: column
 				gap: 0
 
@@ -317,6 +325,20 @@
 				& > *:last-child
 					margin: 0
 					border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius) !important
+
+			.parameters-count-1 .input-group
+				flex-direction: row
+
+				.form-control
+					border-bottom: 1px solid var(--bs-border-color) !important
+					border-radius: var(--bs-border-radius) 0 0 var(--bs-border-radius) !important
+					border-right: 0
+
+					&:focus
+						border-color: var(--bs-primary) !important
+
+				.btn
+					border-radius: 0 var(--bs-border-radius) var(--bs-border-radius) 0 !important
 
 		@container (min-width: 501px)
 
