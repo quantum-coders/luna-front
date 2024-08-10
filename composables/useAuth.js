@@ -3,13 +3,13 @@ export const useAuth = () => {
 	const authUser = useAuthUser();
 
 	const setUser = (user) => {
-		if(process.client && user && user.accessToken) localStorage.setItem('authToken', user.accessToken);
+		if(process.client && user && user.accessToken) localStorage.setItem('accessToken', user.accessToken);
 		authUser.value = user;
 	};
 
 
 	const getToken = () => {
-		if(process.client) return localStorage.getItem('authToken');
+		if(process.client) return localStorage.getItem('accessToken');
 		return null;
 	}
 
@@ -30,7 +30,7 @@ export const useAuth = () => {
 
 	const logout = async () => {
 		// TODO: Check how to use cookies instead of localStorage
-		if(process.client) localStorage.setItem('authToken', null);
+		if(process.client) localStorage.setItem('accessToken', null);
 		setUser(false);
 
 		navigateTo('/');
@@ -40,9 +40,6 @@ export const useAuth = () => {
 
 		const headers = [];
 
-		if(!!authUser.value && typeof authUser.value.workspace !== 'undefined') {
-			headers.push(['Id-Workspace', authUser.value.workspace.id]);
-		}
 
 		return headers;
 	};
@@ -56,7 +53,7 @@ export const useAuth = () => {
 
 			// If we have switchedAuthToken, set the authToken to switchedAuthToken
 			if(!!switchedAuthToken && switchedAuthToken !== 'null') {
-				localStorage.setItem('authToken', switchedAuthToken);
+				localStorage.setItem('accessToken', switchedAuthToken);
 
 				// remove switchedAuthToken from localStorage
 				localStorage.removeItem('switchedAuthToken');

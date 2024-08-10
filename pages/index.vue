@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-	definePageMeta({ layout: 'luna' });
+	definePageMeta({ layout: 'luna' , middleware: 'auth' });
 
 	const solana = useSolanaStore();
 
