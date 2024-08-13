@@ -55,6 +55,7 @@ export default defineNuxtConfig({
 		'nuxt-swiper',
 		'nuxt-svgo',
 		'@pinia/nuxt',
+		'@nuxtjs/device',
 		"@nuxtjs/google-fonts"
 	],
 	googleFonts: {

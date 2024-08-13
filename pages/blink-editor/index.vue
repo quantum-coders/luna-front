@@ -77,7 +77,6 @@
 									<platform-color-input v-model="blink.primaryColor" />
 								</div>
 
-
 								<div class="form-group mb-3">
 									<label for="color" class="form-label">Background Color</label>
 									<platform-color-input v-model="blink.backgroundColor" />

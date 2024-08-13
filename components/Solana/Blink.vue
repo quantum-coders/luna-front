@@ -1,10 +1,29 @@
 <template>
 	<div class="blink-card-wrapper" :style="{ '--blink-primary-color': primaryColor || '#69F89B' }">
 
+
 		<div class="blink-card" v-if="blink" :class="mode">
+			<div class="card-connect" v-if="!!cardConnect">
+				<div class="d-none d-sm-block">
+					<solana-wallet-connect />
+				</div>
+
+				<div class="mobile-connect d-block d-sm-none">
+					<a
+						href="#"
+						v-if="!solanaStore.wallet"
+						class="btn btn-sm btn-primary"
+						@click.prevent="solanaStore.mobileConnect"
+					>Connect Wallet</a>
+					<a href="#" v-else class="btn btn-sm btn-primary">
+						<!-- show wallet address with ellipsis -->
+						{{ solanaStore.wallet.slice(0, 4) }}...{{ solanaStore.wallet.slice(-4) }}
+					</a>
+				</div>
+			</div>
 
 			<div class="blink-image mb-2">
-				<img class="w-100" :src="blink.icon" alt="Blink" />
+				<img :src="blink.icon" alt="Blink" />
 			</div>
 
 			<div class="blink-data">
@@ -86,7 +105,10 @@
 </template>
 
 <script setup>
+	import { PublicKey } from '@solana/web3.js';
 	const txResult = ref('');
+
+	const solanaStore = useSolanaStore();
 
 	const emit = defineEmits([ 'transactionSuccessful' ]);
 
@@ -110,6 +132,10 @@
 		primaryColor: {
 			type: String,
 			default: '',
+		},
+		cardConnect: {
+			type: Boolean,
+			default: false,
 		},
 	});
 
@@ -141,17 +167,17 @@
 	const postBlink = async (action) => {
 
 		action.loading = true;
+		console.log(action);
 		let url = '';
 
 		// if action.href does not start with http, use the domain from b
 		if(!action.href.startsWith('http')) {
 			console.log(useRuntimeConfig().public.baseURL + action.href, props.blinkUrl || {});
 			url = new URL(useRuntimeConfig().public.baseURL + action.href, props.blinkUrl).href;
+
 		} else {
 			url = action.href;
 		}
-
-		console.log(url);
 
 		// if parameters are present
 		if(action.parameters) {
@@ -163,8 +189,6 @@
 				url = url.replace(`{${ p.name }}`, p.value);
 			}
 		}
-
-		console.log(url);
 
 		const res = await useFetch(url, {
 			method: 'POST',
@@ -179,9 +203,15 @@
 			return;
 		}
 
-		txResult.value = await useSolanaStore().signEncodedTransaction(res.data.value.transaction);
-		emit('transactionSuccessful', txResult.value);
-		action.loading = false;
+		try {
+			txResult.value = await useSolanaStore().signEncodedTransaction(res.data.value.transaction);
+			emit('transactionSuccessful', txResult.value);
+			action.loading = false;
+
+		} catch(e) {
+			console.error(e);
+			action.loading = false;
+		}
 	};
 
 	onMounted(() => {
@@ -199,6 +229,12 @@
 	.blink-card-wrapper
 		container-type: inline-size
 		width: 100%
+
+		.card-connect
+			position: absolute
+			top: 0.5rem
+			right: 0.5rem
+			z-index: 2
 
 		.blink-card
 			margin: 0 auto
@@ -221,11 +257,13 @@
 
 			.blink-image
 				aspect-ratio: 1
+				width: 100%
 
 				img
 					border-radius: 0.5rem
 					aspect-ratio: 1
 					object-fit: cover
+					width: 100%
 
 			.blink-data
 				margin-bottom: 1rem

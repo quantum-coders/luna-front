@@ -66,7 +66,7 @@
 	align-items: center
 
 	.swv-modal-overlay
-		background: rgba(black, 10%)
+		background: rgba(black, 50%)
 		top: 0
 		left: 0
 		width: 100%
@@ -78,19 +78,19 @@
 		border-radius: 0.25rem
 		box-shadow: 0 0 2rem rgba(black, 30%)
 		position: relative
-		width: 100%
-		max-width: 30rem
+		width: 480px
+		max-width: calc(100% - 2rem)
 		z-index: 1
 
 		.swv-modal-wrapper
-			padding: 1rem
-			width: 480px
-			height: 180px
+			width: 100%
 
 		.swv-modal-title
 			font-size: 1rem
 			text-align: center
-			margin-bottom: 2rem
+			margin-bottom: 0.5rem
+			padding: 1rem
+			border-bottom: 1px solid var(--bs-border-color)
 
 		.swv-modal-button-close
 			position: absolute
@@ -99,9 +99,12 @@
 			background: transparent
 			border: none
 
+			svg
+				fill: var(--bs-body-color)
+
 		.swv-modal-list
 			list-style: none
-			padding: 0
+			padding: 1rem
 			margin: 0
 
 			li
