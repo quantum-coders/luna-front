@@ -25,13 +25,11 @@
 
 	watch(wallet, async (currentValue) => {
 		if(currentValue) {
-			if(localStorage.getItem('accessToken')) {
-				return;
-			}
 			const connectRes = await fetch(`${ config.public.baseURL }/users/authenticate`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${ localStorage.getItem('accessToken') }`
 				},
 				body: JSON.stringify({
 					wallet: wallet.value,

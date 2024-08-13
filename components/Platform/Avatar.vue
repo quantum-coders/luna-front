@@ -2,6 +2,7 @@
 	<img
 		:src="`${ config.public.baseURL }/users/${ user.id }/avatar?width=${ size }`"
 		class="avatar ratio ratio-1x1 rounded-circle"
+		:style="{ width: `${ size }px`, height: `${ size }px` }"
 		:alt="`${user?.firstname} ${user?.lastname}`"
 	>
 </template>

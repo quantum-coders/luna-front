@@ -11,11 +11,17 @@
 		<div class="header-tools d-flex ms-auto align-items-center justify-content-end gap-2">
 			<platform-theme-switcher />
 			<solana-wallet-connect />
+			<platform-profile
+				:user="authStore.user"
+				:size="40"
+			/>
 		</div>
 	</header>
 </template>
 
 <script setup>
+
+const authStore = useAuthStore();
 </script>
 
 <!--suppress SassScssResolvedByNameOnly -->
