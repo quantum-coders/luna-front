@@ -107,25 +107,6 @@
 
 </script>
 
-<style>
-
-	html:has(.embed) {
-		background: transparent !important;
-		color-scheme: normal;
-	}
-
-	body:has(.embed) {
-		background: transparent !important;
-		color-scheme: dark;
-		overflow: hidden;
-	}
-
-	.blink-wrapper {
-		padding: 0;
-		background: transparent !important;
-	}
-</style>
-
 <!--suppress SassScssResolvedByNameOnly -->
 <style lang="sass" scoped>
 
@@ -154,7 +135,7 @@
 		left: 0
 		width: 100%
 		z-index: 1000
-		background: rgba(var(--blink-header-background, transparent), 1)
+		background: rgba(var(--blink-header-background, transparent), 0.75)
 
 		@media (min-width: $sm)
 			padding: 0.5rem 1rem
@@ -182,7 +163,8 @@
 
 			.header-custom-logo
 				width: auto
-				height: 40px
+				height: 30px
+				margin: 5px
 
 		.header-tools
 			width: 200px
