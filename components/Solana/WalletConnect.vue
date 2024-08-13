@@ -25,6 +25,9 @@
 
 	watch(wallet, async (currentValue) => {
 		if(currentValue) {
+			if(localStorage.getItem('accessToken')) {
+				return;
+			}
 			const connectRes = await fetch(`${ config.public.baseURL }/users/authenticate`, {
 				method: 'POST',
 				headers: {
@@ -32,14 +35,14 @@
 				},
 				body: JSON.stringify({
 					wallet: wallet.value,
+					network: 'solana'
 				}),
 			});
 
 			if(connectRes.ok) {
 				const connectData = await connectRes.json();
-
 				// save accessToken to localStorage
-				localStorage.setItem('accessToken', connectData.accessToken);
+				localStorage.setItem('accessToken', connectData.token);
 				authStore.user = connectData.data;
 			}
 		} else {
