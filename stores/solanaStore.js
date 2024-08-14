@@ -1,12 +1,12 @@
-import { defineStore } from 'pinia';
-import { useWallet } from 'solana-wallets-vue';
+import {defineStore} from 'pinia';
+import {useWallet} from 'solana-wallets-vue';
 import {
 	Connection,
 	Transaction,
-	PublicKey,
+	PublicKey, VersionedTransaction,
 } from '@solana/web3.js';
-import { transact } from '@solana-mobile/mobile-wallet-adapter-protocol';
-import { toByteArray } from 'base64-js';
+import {transact} from '@solana-mobile/mobile-wallet-adapter-protocol';
+import {toByteArray} from 'base64-js';
 
 const APP_IDENTITY = {
 	name: 'Luna AI',
@@ -17,18 +17,18 @@ const APP_IDENTITY = {
 export const useSolanaStore = defineStore('solanaStore', () => {
 
 	const wallet = ref('');
-	const { isMobile } = useDevice();
+	const {isMobile} = useDevice();
 
 	const mobileWallet = ref(null);
 
 	// recover SolanaMobileWalletAdapterDefaultAuthorizationCache from local storage
 	const cachedMobileWallet = localStorage.getItem('SolanaMobileWalletAdapterDefaultAuthorizationCache');
 
-	if(cachedMobileWallet) {
+	if (cachedMobileWallet) {
 		mobileWallet.value = JSON.parse(cachedMobileWallet);
 	}
 
-	const { successToast, errorToast } = usePrettyToast();
+	const {successToast, errorToast} = usePrettyToast();
 
 	const mobileConnect = async () => {
 		const authorizationResult = await transact(async (wallet) => {
@@ -59,11 +59,11 @@ export const useSolanaStore = defineStore('solanaStore', () => {
 	};
 
 	const signEncodedTransaction = async (encodedTransaction) => {
-		const { Buffer } = await import('buffer');
+		const {Buffer} = await import('buffer');
 		const connection = new Connection(useRuntimeConfig().public.solanaRPC, 'confirmed');
 		let provider;
 
-		if(!!isMobile) {
+		if (!!isMobile) {
 			try {
 
 				await transact(async (wallet) => {
@@ -84,11 +84,8 @@ export const useSolanaStore = defineStore('solanaStore', () => {
 					console.log('wallet', wallet);
 					console.log('encodedTransaction', encodedTransaction);
 
-					let transaction = Transaction.from(Buffer.from(encodedTransaction, 'base64'));
-
-					console.log('Signing tx', transaction);
 					let signedTransaction = await wallet.signTransactions({
-						payloads: [ encodedTransaction ],
+						payloads: [encodedTransaction],
 						skipPreflight: true,
 						commitment: 'confirmed',
 					});
@@ -99,47 +96,46 @@ export const useSolanaStore = defineStore('solanaStore', () => {
 							preflightCommitment: 'confirmed',
 						});
 					successToast('Transaction signed');
-					return `https://solscan.io/tx/${ signedTransaction }`;
+					return `https://solscan.io/tx/${signedTransaction}`;
 				});
-			} catch(e) {
+			} catch (e) {
 				console.error('Error signing transaction', e);
 				errorToast('Error signing transaction: ' + e);
 				throw e;
 			}
 		} else {
 
-			if(useWallet().wallet.value.adapter.name.toLowerCase() === 'backpack') {
+			if (useWallet().wallet.value.adapter.name.toLowerCase() === 'backpack') {
 				provider = window.backpack;
-			} else if(useWallet().wallet.value.adapter.name.toLowerCase() === 'solana') {
+			} else if (useWallet().wallet.value.adapter.name.toLowerCase() === 'solana') {
 				provider = window.solana;
-			} else if(useWallet().wallet.value.adapter.name.toLowerCase() === 'phantom') {
+			} else if (useWallet().wallet.value.adapter.name.toLowerCase() === 'phantom') {
 				provider = window.solana;
-			} else if(useWallet().wallet.value.adapter.name.toLowerCase() === 'solflare') {
+			} else if (useWallet().wallet.value.adapter.name.toLowerCase() === 'solflare') {
 				provider = window.solflare;
 			}
 
-			if(!provider) {
+			if (!provider) {
 				alert('Wallet not found');
 				return;
 			}
 
-			console.log('useRuntimeConfig().public.solanaRPC', useRuntimeConfig().public.solanaRPC);
-
-			let transaction = Transaction.from(Buffer.from(encodedTransaction, 'base64'));
-			console.log('Signing tx', transaction);
 			try {
-				const tx = await provider.signAndSendTransaction(transaction);
+				console.log('Checking connection');
+				console.log("Provider", provider);
+				const swapTransactionBuf = Buffer.from(encodedTransaction, 'base64');
+				const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
+				const tx = await provider.signTransaction(transaction
+					, connection, {
+						skipPreflight: true,
+						commitment: 'confirmed',
+					});
 				console.log('tx', tx);
 
-				const confirmTransaction = await connection.confirmTransaction(tx,
-					{
-						commitment: 'confirmed',
-						skipPreflight: true,
-					},
-				);
-				successToast('Transaction confirmed');
-				return `https://solscan.io/tx/${ tx.signature }`;
-			} catch(e) {
+				const signature = await connection.sendRawTransaction(tx.serialize());
+				successToast('Transaction confirmed' + `https://solscan.io/tx/${signature}`);
+				return `https://solscan.io/tx/${signature}`;
+			} catch (e) {
 				console.error('Error signing transaction', e);
 				errorToast('Error signing transaction: ' + e);
 				throw e;
