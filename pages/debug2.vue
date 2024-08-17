@@ -21,7 +21,6 @@ import bs58 from 'bs58';
 const sessionData = ref(null);
 const connectionError = ref(null);
 
-
 function generateKeyPair() {
   const keyPair = nacl.box.keyPair();
   console.log('Generated key pair:', keyPair);
@@ -37,19 +36,17 @@ function createDeepLinkUrl(appUrl, redirectUrl, publicKey) {
   return `https://phantom.app/ul/v1/connect?app_url=${encodedAppUrl}&dapp_encryption_public_key=${publicKey}&redirect_link=${encodedRedirectUrl}&same_tab=true`;
 }
 
-
 const connectToPhantom = () => {
   try {
     if (!sessionData.value) {
       const { publicKey } = generateKeyPair();
       const appUrl = useRuntimeConfig().public.appURL;
-      const redirectUrl = `${useRuntimeConfig().public.appURL}/debug2`;
-      const deepLinkUrl = createDeepLinkUrl(appUrl, redirectUrl, publicKey);
+      const telegramDeepLink = `tg://resolve?domain=${useRuntimeConfig().public.tgBotUsername.replace('@', '')}`;
+      const deepLinkUrl = createDeepLinkUrl(appUrl, telegramDeepLink, publicKey);
 
       console.log('Opening deep link URL:', deepLinkUrl);
       window.open(deepLinkUrl, '_blank');
 
-      // Optional: Add a message to guide the user
       connectionError.value = 'Please complete the connection in the Phantom Wallet popup.';
     } else {
       console.log('Already connected to Phantom. Session data:', sessionData.value);
@@ -79,6 +76,19 @@ const handlePhantomResponse = () => {
     sessionData.value = { publicKey, session };
     console.log('Session data received:', sessionData.value);
     connectionError.value = null;
+
+    // Verificar si window.Telegram.WebView está disponible (opcional)
+    if (typeof window.Telegram !== 'undefined' && typeof window.Telegram.WebView !== 'undefined') {
+      console.log('window.Telegram.WebView is available!');
+      window.Telegram.WebView.postMessage({
+        type: 'phantom_connected',
+        publicKey: publicKey,
+        session: session
+      });
+    } else {
+      console.warn('window.Telegram.WebView is not available. Skipping message posting.');
+    }
+
   } else if (errorCode && errorMessage) {
     connectionError.value = `Error ${errorCode}: ${errorMessage}`;
     console.error('Phantom connection error:', connectionError.value);
@@ -95,7 +105,6 @@ const handleStorageEvent = (event) => {
 };
 
 onMounted(() => {
-  // Agregar el listener al montar el componente
   window.addEventListener('storage', handleStorageEvent);
 
   const storedSession = localStorage.getItem('phantomSession');
@@ -105,7 +114,6 @@ onMounted(() => {
   }
 });
 
-// Eliminar el listener al desmontar el componente
 onUnmounted(() => {
   window.removeEventListener('storage', handleStorageEvent);
 });
