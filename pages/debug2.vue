@@ -15,6 +15,7 @@
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue';
 import nacl from 'tweetnacl';
 import bs58 from 'bs58';
 
@@ -41,7 +42,9 @@ const connectToPhantom = () => {
     if (!sessionData.value) {
       const { publicKey } = generateKeyPair();
       const appUrl = useRuntimeConfig().public.appURL;
-      const telegramDeepLink = `tg://resolve?domain=${useRuntimeConfig().public.tgBotUsername.replace('@', '')}`;
+      const telegramBotUsername = useRuntimeConfig().public.tgBotUsername;
+
+      const telegramDeepLink = `tg://resolve?domain=${telegramBotUsername}&startapp&mode=fullview`;
       const deepLinkUrl = createDeepLinkUrl(appUrl, telegramDeepLink, publicKey);
 
       console.log('Opening deep link URL:', deepLinkUrl);
@@ -78,7 +81,7 @@ const handlePhantomResponse = () => {
     connectionError.value = null;
 
     // Verificar si window.Telegram.WebView está disponible (opcional)
-    if (typeof window.Telegram !== 'undefined' && typeof window.Telegram.WebView !== 'undefined') {
+    if (window.Telegram?.WebApp?.ready) {
       console.log('window.Telegram.WebView is available!');
       window.Telegram.WebView.postMessage({
         type: 'phantom_connected',
@@ -88,7 +91,6 @@ const handlePhantomResponse = () => {
     } else {
       console.warn('window.Telegram.WebView is not available. Skipping message posting.');
     }
-
   } else if (errorCode && errorMessage) {
     connectionError.value = `Error ${errorCode}: ${errorMessage}`;
     console.error('Phantom connection error:', connectionError.value);
@@ -107,11 +109,27 @@ const handleStorageEvent = (event) => {
 onMounted(() => {
   window.addEventListener('storage', handleStorageEvent);
 
-  const storedSession = localStorage.getItem('phantomSession');
-  if (storedSession) {
-    sessionData.value = JSON.parse(storedSession);
-    console.log('Restored session from local storage:', sessionData.value);
+  function checkTelegramWebAppReady() {
+    if (window.Telegram?.WebApp?.ready) {
+      const storedSession = localStorage.getItem('phantomSession');
+      if (storedSession) {
+        sessionData.value = JSON.parse(storedSession);
+        console.log('Restored session from local storage:', sessionData.value);
+
+        // Nuevo console.log para verificar si se redirigió correctamente
+        console.log('Página cargada después de la conexión. ¿Se redirigió correctamente a la mini app?');
+      } else {
+        console.log('No stored session found. Handling initial response.');
+        handlePhantomResponse();
+      }
+    } else {
+      // Si la API no está lista, reintentar después de un breve retraso
+      setTimeout(checkTelegramWebAppReady, 100);
+    }
   }
+
+  // Iniciar la comprobación de la API de Telegram
+  checkTelegramWebAppReady();
 });
 
 onUnmounted(() => {
