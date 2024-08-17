@@ -42,8 +42,8 @@ const connectToPhantom = () => {
   try {
     if (!sessionData.value) {
       const { publicKey } = generateKeyPair();
-      const appUrl = useRuntimeConfig().public.appURL.value;
-      const redirectUrl = `${useRuntimeConfig().public.appURL.value}/debug2`;
+      const appUrl = useRuntimeConfig().public.appURL;
+      const redirectUrl = `${useRuntimeConfig().public.appURL}/debug2`;
       const deepLinkUrl = createDeepLinkUrl(appUrl, redirectUrl, publicKey);
 
       console.log('Opening deep link URL:', deepLinkUrl);
