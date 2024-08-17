@@ -1,66 +1,72 @@
 <template>
   <div>
-    <button @click="connectToPhantom">Conectar con Phantom</button>
-    <div v-if="session">
-      <h3>Sesión Conectada:</h3>
-      <pre>{{ session }}</pre>
+    <button @click="connectToPhantom">Connect to Phantom Wallet</button>
+    <div v-if="sessionData">
+      <h3>Session Data:</h3>
+      <pre>{{ sessionData }}</pre>
     </div>
-    <div v-else>
-      <p>No hay sesión conectada.</p>
-    </div>
+    <div v-if="connectionError" class="error-message">{{ connectionError }}</div>
   </div>
 </template>
 
 <script setup>
+import nacl from 'tweetnacl';
+import bs58 from 'bs58';
 
-// Ref para almacenar la sesión
-const session = ref(null);
+const sessionData = ref(null);
+const connectionError = ref(null);
 
-// Función para generar un nonce aleatorio
-function generateNonce(length = 24) {
-  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += charset.charAt(Math.floor(Math.random() * charset.length));
-  }
-  return result;
+function generateKeyPair() {
+  const keyPair = nacl.box.keyPair();
+  return {
+    publicKey: bs58.encode(Buffer.from(keyPair.publicKey)),
+    secretKey: keyPair.secretKey,
+  };
 }
 
-// Función para conectar a Phantom Wallet utilizando deep links
-async function connectToPhantom() {
+function createDeepLinkUrl(appUrl, redirectUrl, publicKey) {
+  const encodedAppUrl = encodeURIComponent(appUrl);
+  const encodedRedirectUrl = encodeURIComponent(redirectUrl);
+  return `https://phantom.app/ul/v1/connect?app_url=${encodedAppUrl}&dapp_encryption_public_key=${publicKey}&redirect_link=${encodedRedirectUrl}`;
+}
+
+const connectToPhantom = () => {
   try {
-    const appUrl = encodeURIComponent('https://app.lunadefi.ai');
-    const dappEncryptionPublicKey = 'tu-public-key-aqui'; // Debes generar tu propia clave pública para el cifrado
-    const redirectLink = encodeURIComponent('https://app.lunadefi.ai/callback');
-    const cluster = 'mainnet-beta'; // Puedes cambiarlo a 'testnet' o 'devnet' según sea necesario
-    const baseUrl = `https://phantom.app/ul/v1/connect`;
-
-    const url = `${baseUrl}?app_url=${appUrl}&dapp_encryption_public_key=${dappEncryptionPublicKey}&redirect_link=${redirectLink}&cluster=${cluster}`;
-
-    // Usar el deep link para abrir Phantom
-    window.location.href = url;
+    const { publicKey } = generateKeyPair();
+    const appUrl = 'https://app.lunadefi.ai';
+    const redirectUrl = 'https://app.lunadefi.ai/debug2';
+    const deepLinkUrl = createDeepLinkUrl(appUrl, redirectUrl, publicKey);
+    window.open(deepLinkUrl, '_blank');
   } catch (error) {
-    console.error('Error al conectar con Phantom:', error);
+    connectionError.value = 'Error connecting to Phantom Wallet.';
+    console.error('Connection error:', error);
   }
-}
+};
 
-// Después de redirigir de Phantom, puedes manejar la respuesta en otra ruta o componente
-// Aquí se ejemplifica cómo podrías manejar la sesión devuelta por Phantom
-
-async function handlePhantomResponse() {
+const handlePhantomResponse = () => {
   const urlParams = new URLSearchParams(window.location.search);
-  const sessionParam = urlParams.get('session');
+  const publicKey = urlParams.get('public_key');
+  const session = urlParams.get('session');
+  const errorCode = urlParams.get('errorCode');
+  const errorMessage = urlParams.get('errorMessage');
 
-  if (sessionParam) {
-    // Almacenar la sesión para futuros usos
-    session.value = sessionParam;
-
-    console.log('Sesión conectada:', session.value);
+  if (publicKey && session) {
+    sessionData.value = { publicKey, session };
+  } else if (errorCode && errorMessage) {
+    connectionError.value = `Error ${errorCode}: ${errorMessage}`;
   } else {
-    console.error('No se recibió sesión de Phantom.');
+    connectionError.value = 'Invalid response from Phantom.';
   }
-}
+};
 
-// Llamar a la función para manejar la respuesta si ya está de regreso de Phantom
-handlePhantomResponse();
+onMounted(() => {
+  handlePhantomResponse();
+});
 </script>
+
+<style scoped>
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+</style>
