@@ -167,7 +167,7 @@
 				margin: 5px
 
 		.header-tools
-			width: 200px
+			min-width: 200px
 
 	.the-blink
 		display: flex

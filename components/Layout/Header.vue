@@ -9,19 +9,18 @@
 		</div>
 
 		<div class="header-tools d-flex ms-auto align-items-center justify-content-end gap-2">
-			<platform-theme-switcher />
-			<solana-wallet-connect />
-			<platform-profile
-				:user="authStore.user"
-				:size="40"
-			/>
+			<solana-wallet-connect>
+				<template #extraActions>
+					<li class="theme-switcher-wrapper">
+						<platform-theme-switcher />
+					</li>
+				</template>
+			</solana-wallet-connect>
 		</div>
 	</header>
 </template>
 
 <script setup>
-
-const authStore = useAuthStore();
 </script>
 
 <!--suppress SassScssResolvedByNameOnly -->
@@ -59,8 +58,14 @@ const authStore = useAuthStore();
 				height: 40px
 
 		.header-tools
-			width: 200px
-
+			flex-grow: 1
 			padding-right: 1rem
+
+			.theme-switcher-wrapper
+				display: flex
+				align-items: center
+				justify-content: center
+				padding: 0.5rem
+				border-top: 1px solid var(--bs-border-color)
 
 </style>

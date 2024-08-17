@@ -50,6 +50,7 @@
 		cursor: pointer
 		display: block
 		width: 100%
+		min-width: 50px
 		max-width: 70px
 
 		.checkbox

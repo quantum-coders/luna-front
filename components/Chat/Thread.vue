@@ -12,7 +12,6 @@
 			<div class="examples">
 
 				<h4 class="text-center mb-3">Try Luna now</h4>
-
 				<div class="examples-wrapper">
 					<div class="row gy-3">
 						<div class="col d-flex col-12 col-sm-4">
