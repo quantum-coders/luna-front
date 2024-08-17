@@ -12,6 +12,7 @@
 </template>
 
 <script setup>
+
 // Ref para almacenar la sesión
 const session = ref(null);
 
@@ -25,7 +26,7 @@ function generateNonce(length = 24) {
   return result;
 }
 
-// Función para conectar a Phantom Wallet
+// Función para conectar a Phantom Wallet utilizando deep links
 async function connectToPhantom() {
   try {
     const appUrl = encodeURIComponent('https://app.lunadefi.ai');
@@ -36,7 +37,7 @@ async function connectToPhantom() {
 
     const url = `${baseUrl}?app_url=${appUrl}&dapp_encryption_public_key=${dappEncryptionPublicKey}&redirect_link=${redirectLink}&cluster=${cluster}`;
 
-    // Redireccionar al usuario a la URL de conexión de Phantom
+    // Usar el deep link para abrir Phantom
     window.location.href = url;
   } catch (error) {
     console.error('Error al conectar con Phantom:', error);
