@@ -6,6 +6,8 @@
 				@click="connectToPhantom"
 			>Connect to Phantom Wallet
 			</button>
+
+			<pre>{{ tgWebAppStartParam }}</pre>
 		</div>
 	</div>
 </template>
@@ -47,5 +49,10 @@
 			console.error('Connection error:', error);
 		}
 	};
+
+	// compute the query param tgWebAppStartParam
+	const tgWebAppStartParam = computed(() => {
+		return useRoute().query.tgWebAppStartParam;
+	});
 
 </script>
