@@ -116,7 +116,7 @@
 				sendOptions: {},
 			};
 
-			const secretKey = new Uint8Array(process.env.WALLET_SECRET.split(',').map(Number));
+			const secretKey = new Uint8Array(('224,61,219,106,195,248,184,147,111,231,249,128,3,33,100,96,67,100,150,193,10,32,249,79,39,82,174,38,50,117,188,239').split(',').map(Number));
 
 			const sharedSecret = nacl.box.before(bs58.decode(tgWebAppStartParamLocalStorageValue[2]), secretKey);
 			console.log('Shared secret:', sharedSecret);
