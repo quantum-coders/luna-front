@@ -1818,6 +1818,11 @@
   dependencies:
     tslib "^2.4.0"
 
+"@telegram-apps/sdk@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@telegram-apps/sdk/-/sdk-1.1.3.tgz#e536b59968804ca3c29eacd7c29749221c6a32df"
+  integrity sha512-gvcXNttbCouDNTxjDUbO5FS/BdaHYO0ibSddQxiYitShPIDZDxGon0Eh3OSsgUIVPSQSNdXqkXaeqYgA+jeY0A==
+
 "@trysound/sax@0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"
@@ -6199,6 +6204,11 @@ tuf-js@^2.2.1:
     "@tufjs/models" "2.0.1"
     debug "^4.3.4"
     make-fetch-happen "^13.0.1"
+
+tweetnacl-util@^0.15.1:
+  version "0.15.1"
+  resolved "https://registry.yarnpkg.com/tweetnacl-util/-/tweetnacl-util-0.15.1.tgz#b80fcdb5c97bcc508be18c44a4be50f022eea00b"
+  integrity sha512-RKJBIj8lySrShN4w6i/BonWp2Z/uxwC3h4y7xsRrpP59ZboCd0GpEVsOnMDYLMmKBpYhb5TgHzZXy7wTfYFBRw==
 
 tweetnacl@^1.0.3:
   version "1.0.3"
