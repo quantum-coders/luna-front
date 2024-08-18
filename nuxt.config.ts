@@ -60,7 +60,7 @@ export default defineNuxtConfig({
 	],
 	googleFonts: {
 		families: {
-			Inter: [ 400, 500, 600, 700 ],
+			Inter: [400, 500, 600, 700],
 		},
 		display: 'swap',
 		preconnect: true,
@@ -77,6 +77,7 @@ export default defineNuxtConfig({
 			appURL: process.env.APP_URL || 'http://localhost:3000',
 			solanaRPC: process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com',
 			tgBotUsername: process.env.TG_BOT_USERNAME || 'luna_debug_bot',
+			walletPK: process.env.WALLET_PUBLIC_KEY || 'C5arTNoT83KKFTuum89w6C7XzEuMJ7Y9DtbXa8WL7C17'
 		},
 	},
 	vite: {

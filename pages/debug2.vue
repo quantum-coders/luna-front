@@ -23,24 +23,17 @@
 	const sessionData = ref(null);
 	const connectionError = ref(null);
 
-	const getPublicKey = async () => {
-		const { data, error } = await useBaseFetch('/web3/public-key');
-
-		return data.value.data;
-	};
-
-	function createDeepLinkUrl(appUrl, redirectUrl, publicKey) {
+	const createDeepLinkUrl = (appUrl, redirectUrl, publicKey) => {
 		const encodedAppUrl = encodeURIComponent(appUrl);
 		const encodedRedirectUrl = encodeURIComponent(redirectUrl);
 		console.log('createDeepLinkUrl', `https://phantom.app/ul/v1/connect?app_url=${ encodedAppUrl }&dapp_encryption_public_key=${ publicKey }&same_tab=true&${ encodedRedirectUrl }`);
 		return `https://phantom.app/ul/v1/connect?app_url=${ encodedAppUrl }&dapp_encryption_public_key=${ publicKey }&same_tab=true&redirect_link=${ encodedRedirectUrl }`;
-	}
+	};
 
 	const connectToPhantom = async () => {
 		try {
 			if(!sessionData.value) {
-				const publicKey = await getPublicKey();
-
+				const publicKey = useRuntimeConfig().public.walletPK;
 				const appUrl = useRuntimeConfig().public.appURL;
 				const telegramDeepLink = `${ appUrl }/debug3`;
 				const deepLinkUrl = createDeepLinkUrl(appUrl, telegramDeepLink, publicKey);
@@ -54,15 +47,5 @@
 			console.error('Connection error:', error);
 		}
 	};
-
-	const disconnectFromPhantom = () => {
-		sessionData.value = null;
-		localStorage.removeItem('phantomSession');
-		console.log('Disconnected from Phantom Wallet');
-	};
-
-	// Listener para el evento 'storage'
-	onMounted(() => {
-	});
 
 </script>
