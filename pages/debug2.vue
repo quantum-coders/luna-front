@@ -11,7 +11,6 @@
 			<pre>DESDE LocalStorage: {{ tgWebAppStartParamLocalStorage }}</pre>
 
 			<button
-				v-if="tgWebAppStartParamLocalStorage"
 				class="btn btn-primary"
 				@click="signAndSendTransaction"
 			>Sign and Send Transaction
@@ -70,7 +69,7 @@
 		return localStorage.getItem('tgWebAppStartParam');
 	});
 
-	const signAndSendTransaction = () => {
+	const signAndSendTransaction = async () => {
 		if(tgWebAppStartParamLocalStorage.value) {
 
 			// split tgWebAppStartParamLocalStorage.value by '-'
