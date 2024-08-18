@@ -97,7 +97,7 @@
 			const bypassLink = `${ appUrl }/debug3`;
 
 			const payloadRaw = {
-				transaction,
+				transaction: bs58.encode(transaction),
 				session: tgWebAppStartParamLocalStorageValue[1],
 				sendOptions: {},
 			};
