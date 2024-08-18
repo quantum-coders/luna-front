@@ -9,6 +9,13 @@
 
 			<pre>DESDE QUERY: {{ tgWebAppStartParam }}</pre>
 			<pre>DESDE LocalStorage: {{ tgWebAppStartParamLocalStorage }}</pre>
+
+			<button
+				v-if="tgWebAppStartParamLocalStorage"
+				class="btn btn-primary"
+				@click="signAndSendTransaction"
+			>Sign and Send Transaction
+			</button>
 		</div>
 	</div>
 </template>
@@ -63,13 +70,7 @@
 		return localStorage.getItem('tgWebAppStartParam');
 	});
 
-	onMounted(async () => {
-		// check if there is something in the query param tgWebAppStartParam
-		if(tgWebAppStartParam.value) {
-			// save it to localStorage
-			localStorage.setItem('tgWebAppStartParam', tgWebAppStartParam.value);
-		}
-
+	const signAndSendTransaction = () => {
 		if(tgWebAppStartParamLocalStorage.value) {
 
 			// split tgWebAppStartParamLocalStorage.value by '-'
@@ -116,6 +117,14 @@
 
 			// open the transactionDeepLink in a new tab
 			window.open(transactionDeepLink, '_blank');
+		}
+	};
+
+	onMounted(async () => {
+		// check if there is something in the query param tgWebAppStartParam
+		if(tgWebAppStartParam.value) {
+			// save it to localStorage
+			localStorage.setItem('tgWebAppStartParam', tgWebAppStartParam.value);
 		}
 	});
 
