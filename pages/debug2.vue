@@ -76,7 +76,7 @@
 			const tgWebAppStartParamLocalStorageValue = tgWebAppStartParamLocalStorage.value.split('-');
 
 			// do something with the value
-			const blinkRes = await useBaseFetch('https://appapi.lunadefi.ai/blinks/transfer-sol?to=Gqs7Bxt5gBrH7RUygsbFLVybEQxUbdMkHZUbUCkF4ngV&amount=0.001', {
+			const blinkRes = await useFetch('https://appapi.lunadefi.ai/blinks/transfer-sol?to=Gqs7Bxt5gBrH7RUygsbFLVybEQxUbdMkHZUbUCkF4ngV&amount=0.001', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
