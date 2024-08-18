@@ -11,8 +11,8 @@
 			method: 'POST',
 			body: JSON.stringify({
 				encryptionPK: useRoute().query.phantom_encryption_public_key,
-				payload: useRoute().query.data,
 				nonce: useRoute().query.nonce,
+				payload: useRoute().query.data,
 			}),
 		});
 
