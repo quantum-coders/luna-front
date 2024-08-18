@@ -11,9 +11,9 @@
 		<div class="header-tools d-flex ms-auto align-items-center justify-content-end gap-2">
 			<solana-wallet-connect>
 				<template #extraActions>
-					<li class="theme-switcher-wrapper">
+					<div class="theme-switcher-wrapper">
 						<platform-theme-switcher />
-					</li>
+					</div>
 				</template>
 			</solana-wallet-connect>
 		</div>
@@ -61,7 +61,7 @@
 			flex-grow: 1
 			padding-right: 1rem
 
-			.theme-switcher-wrapper
+			.profile-menu-wrapper .theme-switcher-wrapper
 				display: flex
 				align-items: center
 				justify-content: center

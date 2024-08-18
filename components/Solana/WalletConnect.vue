@@ -1,7 +1,7 @@
 <template>
 	<wallet-multi-button>
 		<template #default="{ wallet, openModal, publicKeyTrimmed, copyAddress, addressCopied, disconnect, publicKeyBase58 }">
-			<div class="wallet-wrapper d-flex align-items-center gap-2">
+			<div class="wallet-wrapper d-flex align-items-center gap-2" :class="{ 'connected': !!publicKeyBase58.value }">
 				<template v-if="!!publicKeyBase58.value">
 					<wallet-icon class="wallet-icon" :wallet="wallet" />
 					<p class="abbreviated-wallet">{{ publicKeyTrimmed.value }}</p>
@@ -24,6 +24,8 @@
 					</div>
 				</template>
 				<template v-else>
+					<slot name="extraActions" />
+
 					<a href="#" @click.prevent="openModal" class="select-wallet">Select a wallet</a>
 				</template>
 			</div>
@@ -86,8 +88,11 @@
 		background: var(--bs-light-bg-subtle)
 		border-radius: 100rem
 
+		&:not(.connected)
+			padding-left: 0.5rem
+
 		.select-wallet
-			padding: 0.25rem 1rem
+			padding: 0.25rem 1rem 0.25rem 0
 			margin-bottom: 0
 			color: var(--bs-body-color)
 			text-decoration: none

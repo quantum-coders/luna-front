@@ -763,9 +763,10 @@
 				height: 1.5rem
 
 		.blink-preview
+			border-left: 1px solid var(--bs-border-color)
 			height: calc(100dvh - 60px)
 			padding: 2rem
-			min-width: 450px
+			min-width: 750px
 			flex-grow: 1
 			display: flex
 			justify-content: center

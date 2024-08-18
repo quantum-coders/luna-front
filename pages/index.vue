@@ -1,38 +1,43 @@
 <template>
 	<div class="rim-experience">
-			<main class="connect" v-if="!solana.wallet">
+		<main class="connect" v-if="!solana.wallet">
 
-				<div class="connect-card">
-					<img src="/images/lunita.png" alt="">
-					<div class="copy p-3">
-						<h2>Connect Your Wallet to Unlock Luna AI's Full Potential</h2>
-						<p>Discover the future of AI-driven solutions with Luna AI! By connecting your wallet, you gain access to a revolutionary platform that harnesses the power of artificial intelligence to elevate your business strategies and operations</p>
-						<p class="text-end mb-0">
-							<a href="#" class="btn btn-primary" @click.prevent="connectWallet">
-								<icon name="material-symbols:account-balance-wallet-outline" />
-								Connect Wallet
-							</a>
-						</p>
-					</div>
+			<div class="connect-card">
+				<img src="/images/lunita.png" alt="">
+				<div class="copy p-3">
+					<h2>Connect Your Wallet to Unlock Luna AI's Full Potential</h2>
+					<p>Discover the future of AI-driven solutions with Luna AI! By connecting your wallet, you gain access to a revolutionary platform that harnesses the power of artificial intelligence to elevate your business strategies and operations</p>
+					<p class="text-end mb-0">
+						<wallet-multi-button>
+							<template #default="{ wallet, openModal, publicKeyTrimmed, copyAddress, addressCopied, disconnect, publicKeyBase58 }">
+								<a href="#" class="btn btn-primary" @click.prevent="openModal">
+									<icon name="material-symbols:account-balance-wallet-outline" />
+									Connect Wallet
+								</a>
+							</template>
+						</wallet-multi-button>
+					</p>
 				</div>
+			</div>
 
-			</main>
-			<main v-else class="chat">
-				<!--<a href="#" class="btn btn-primary" @click.prevent="toggle">Toggle Sidebar</a>-->
-				<chat-thread />
-				<div class="chat-controls">
-					<chat-input />
-				</div>
-			</main>
+		</main>
+		<main v-else class="chat">
+			<!--<a href="#" class="btn btn-primary" @click.prevent="toggle">Toggle Sidebar</a>-->
+			<chat-thread />
+			<div class="chat-controls">
+				<chat-input />
+			</div>
+		</main>
 
-			<aside :class="{ 'is-open': !!chat.wisMessage && solana.wallet }" class="wis">
-				<chat-wis />
-			</aside>
-		</div>
+		<aside :class="{ 'is-open': !!chat.wisMessage && solana.wallet }" class="wis">
+			<chat-wis />
+		</aside>
+	</div>
 </template>
 
 <script setup>
-	definePageMeta({ layout: 'luna' , middleware: 'auth' });
+	import { useWallet, WalletMultiButton } from 'solana-wallets-vue';
+	definePageMeta({ layout: 'luna', middleware: 'auth' });
 
 	const solana = useSolanaStore();
 
@@ -43,6 +48,7 @@
 	const chat = useChatStore();
 
 	const connectWallet = () => {
+
 		// click .swv-button-trigger
 		document.querySelector('.swv-button-trigger').click();
 	};
