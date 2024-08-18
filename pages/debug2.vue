@@ -70,6 +70,20 @@
 		return localStorage.getItem('tgWebAppStartParam');
 	});
 
+	const encryptPayload = (payload, sharedSecret) => {
+		if(!sharedSecret) throw new Error('missing shared secret');
+
+		const nonce = nacl.randomBytes(24);
+
+		const encryptedPayload = nacl.box.after(
+			Buffer.from(JSON.stringify(payload)),
+			nonce,
+			sharedSecret,
+		);
+
+		return [nonce, encryptedPayload];
+	};
+
 	const signAndSendTransaction = async () => {
 		if(tgWebAppStartParamLocalStorage.value) {
 
@@ -88,10 +102,8 @@
 			});
 
 			let transaction = blinkRes.data.value.data.transaction;
-			// deserialize the transaction
 			const transactionBuffer = Buffer.from(transaction, 'base64');
 			transaction = bs58.encode(transactionBuffer);
-
 
 			const publicKey = useRuntimeConfig().public.walletPK;
 
@@ -107,18 +119,15 @@
 				sendOptions: {},
 			};
 
-			const payloadJSON = JSON.stringify(payloadRaw);
+			const secretKey = new Uint8Array(process.env.WALLET_SECRET.split(',').map(Number));
 
-			const encryptionKey = bs58.decode(publicKey);
-			const encryptedPayload = nacl.secretbox(
-				Buffer.from(payloadJSON),
-				nonce,
-				encryptionKey,
-			);
+			const sharedSecret = nacl.box.before(bs58.decode(encryptionPK), secretKey);
+			console.log('Shared secret:', sharedSecret);
 
-			// Encode the encrypted payload in base58
-			const encryptedPayloadBase58 = bs58.encode(encryptedPayload);
+
 			const transactionDeepLink = `https://phantom.app/ul/v1/signAndSendTransaction?dapp_encryption_public_key=${ publicKey }&transaction=${ transaction }&nonce=${ nonceBase58 }&redirect_link=${ bypassLink }&payload=${ encryptedPayloadBase58 }`;
+
+			console.log('transactionDeepLink:', transactionDeepLink);
 
 			// open the transactionDeepLink in a new tab
 			window.open(transactionDeepLink, '_blank');
