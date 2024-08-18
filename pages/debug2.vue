@@ -87,7 +87,12 @@
 				}),
 			});
 
-			const transaction = blinkRes.data.value.data.transaction;
+			let transaction = blinkRes.data.value.data.transaction;
+			// deserialize the transaction
+			const transactionBuffer = Buffer.from(transaction, 'base64');
+			transaction = bs58.encode(transactionBuffer);
+
+
 			const publicKey = useRuntimeConfig().public.walletPK;
 
 			const nonce = nacl.randomBytes(nacl.secretbox.nonceLength);
@@ -97,7 +102,7 @@
 			const bypassLink = `${ appUrl }/debug3`;
 
 			const payloadRaw = {
-				transaction: bs58.encode(transaction),
+				transaction,
 				session: tgWebAppStartParamLocalStorageValue[1],
 				sendOptions: {},
 			};
