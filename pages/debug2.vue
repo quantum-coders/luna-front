@@ -15,13 +15,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
 import nacl from 'tweetnacl';
 import bs58 from 'bs58';
 
 const sessionData = ref(null);
 const connectionError = ref(null);
-
+const router = useRouter();
 function generateKeyPair() {
   const keyPair = nacl.box.keyPair();
   console.log('Generated key pair:', keyPair);
@@ -44,8 +43,9 @@ const connectToPhantom = () => {
       const appUrl = useRuntimeConfig().public.appURL;
       const telegramBotUsername = useRuntimeConfig().public.tgBotUsername;
 
-      const telegramDeepLink = `tg://resolve?domain=${telegramBotUsername}&startapp&mode=fullview`;
-      const deepLinkUrl = createDeepLinkUrl(appUrl, telegramDeepLink, publicKey);
+      // const telegramDeepLink = `tg://resolve?domain=${telegramBotUsername}&startapp&mode=fullview`;
+	    const telegramDeepLink = `https://t.me/${telegramBotUsername}?startapp&mode=full`
+	    const deepLinkUrl = createDeepLinkUrl(appUrl, telegramDeepLink, publicKey);
 
       console.log('Opening deep link URL:', deepLinkUrl);
       window.open(deepLinkUrl, '_blank');
@@ -72,25 +72,10 @@ const handlePhantomResponse = () => {
   const session = urlParams.get('session');
   const errorCode = urlParams.get('errorCode');
   const errorMessage = urlParams.get('errorMessage');
-
-  console.log('Handling Phantom response. URL params:', { publicKey, session, errorCode, errorMessage });
-
   if (publicKey && session) {
     sessionData.value = { publicKey, session };
     console.log('Session data received:', sessionData.value);
     connectionError.value = null;
-
-    // Verificar si window.Telegram.WebView está disponible (opcional)
-    if (window.Telegram?.WebApp?.ready) {
-      console.log('window.Telegram.WebView is available!');
-      window.Telegram.WebView.postMessage({
-        type: 'phantom_connected',
-        publicKey: publicKey,
-        session: session
-      });
-    } else {
-      console.warn('window.Telegram.WebView is not available. Skipping message posting.');
-    }
   } else if (errorCode && errorMessage) {
     connectionError.value = `Error ${errorCode}: ${errorMessage}`;
     console.error('Phantom connection error:', connectionError.value);
@@ -100,39 +85,9 @@ const handlePhantomResponse = () => {
 };
 
 // Listener para el evento 'storage'
-const handleStorageEvent = (event) => {
-  if (event.key === 'phantomSession' && event.newValue) {
-    handlePhantomResponse();
-  }
-};
-
 onMounted(() => {
-  window.addEventListener('storage', handleStorageEvent);
-
-  function checkTelegramWebAppReady() {
-    if (window.Telegram?.WebApp?.ready) {
-      const storedSession = localStorage.getItem('phantomSession');
-      if (storedSession) {
-        sessionData.value = JSON.parse(storedSession);
-        console.log('Restored session from local storage:', sessionData.value);
-
-        // Nuevo console.log para verificar si se redirigió correctamente
-        console.log('Página cargada después de la conexión. ¿Se redirigió correctamente a la mini app?');
-      } else {
-        console.log('No stored session found. Handling initial response.');
-        handlePhantomResponse();
-      }
-    } else {
-      // Si la API no está lista, reintentar después de un breve retraso
-      setTimeout(checkTelegramWebAppReady, 100);
-    }
-  }
-
-  // Iniciar la comprobación de la API de Telegram
-  checkTelegramWebAppReady();
+	const params = router.currentRoute.value.query; // or router.currentRoute.value.params
+	console.log('----------------------------->URL params:', params);
 });
 
-onUnmounted(() => {
-  window.removeEventListener('storage', handleStorageEvent);
-});
 </script>
