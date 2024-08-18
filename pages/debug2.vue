@@ -107,13 +107,10 @@
 
 			const publicKey = useRuntimeConfig().public.walletPK;
 
-			const nonce = nacl.randomBytes(nacl.secretbox.nonceLength);
-			const nonceBase58 = bs58.encode(nonce);
-
 			const appUrl = useRuntimeConfig().public.appURL;
 			const bypassLink = `${ appUrl }/debug3`;
 
-			const payloadRaw = {
+			const payload = {
 				transaction,
 				session: tgWebAppStartParamLocalStorageValue[1],
 				sendOptions: {},
@@ -121,11 +118,12 @@
 
 			const secretKey = new Uint8Array(process.env.WALLET_SECRET.split(',').map(Number));
 
-			const sharedSecret = nacl.box.before(bs58.decode(encryptionPK), secretKey);
+			const sharedSecret = nacl.box.before(bs58.decode(tgWebAppStartParamLocalStorageValue[2]), secretKey);
 			console.log('Shared secret:', sharedSecret);
 
+			const [nonce, encryptedPayload] = encryptPayload(payload, sharedSecret);
 
-			const transactionDeepLink = `https://phantom.app/ul/v1/signAndSendTransaction?dapp_encryption_public_key=${ publicKey }&transaction=${ transaction }&nonce=${ nonceBase58 }&redirect_link=${ bypassLink }&payload=${ encryptedPayloadBase58 }`;
+			const transactionDeepLink = `https://phantom.app/ul/v1/signAndSendTransaction?dapp_encryption_public_key=${ publicKey }&transaction=${ transaction }&nonce=${ bs58.encode(nonce) }&redirect_link=${ bypassLink }&payload=${ bs58.encode(encryptedPayload) }`;
 
 			console.log('transactionDeepLink:', transactionDeepLink);
 

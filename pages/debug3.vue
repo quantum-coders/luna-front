@@ -1,4 +1,5 @@
 <template>
+	<pre>{{ useRoute().query }}</pre>
 	<pre>{{ payloadData }}</pre>
 </template>
 
