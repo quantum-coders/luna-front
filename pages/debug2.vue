@@ -44,7 +44,7 @@
 				const publicKey = await getPublicKey();
 
 				const appUrl = useRuntimeConfig().public.appURL;
-				const telegramDeepLink = `https://89e4-2a09-bac5-98-1b9-00-2c-b1.ngrok-free.app/debug3`;
+				const telegramDeepLink = `${ appUrl }/debug3`;
 				const deepLinkUrl = createDeepLinkUrl(appUrl, telegramDeepLink, publicKey);
 
 				window.open(deepLinkUrl, '_blank');
