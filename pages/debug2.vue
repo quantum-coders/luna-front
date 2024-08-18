@@ -24,9 +24,7 @@
 	const connectionError = ref(null);
 
 	const getPublicKey = async () => {
-		const { data, error } = await useBaseFetch('/web3/public-key', {
-			method: 'GET',
-		});
+		const { data, error } = await useBaseFetch('/web3/public-key');
 
 		return data.value.data;
 	};
