@@ -24,6 +24,8 @@
 	// redirect on mounted
 	onMounted(async () => {
 		await decodeWalletPayload();
+
+		document.location.href = 'https://t.me/lunadebugbot/blinks?startapp=' + payloadData.value.payload;
 	});
 </script>
 
