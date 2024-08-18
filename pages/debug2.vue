@@ -7,7 +7,8 @@
 			>Connect to Phantom Wallet
 			</button>
 
-			<pre>{{ tgWebAppStartParam }}</pre>
+			<pre>DESDE QUERY: {{ tgWebAppStartParam }}</pre>
+			<pre>DESDE LocalStorage: {{ tgWebAppStartParamLocalStorage }}</pre>
 		</div>
 	</div>
 </template>
@@ -53,6 +54,19 @@
 	// compute the query param tgWebAppStartParam
 	const tgWebAppStartParam = computed(() => {
 		return useRoute().query.tgWebAppStartParam;
+	});
+
+	// compute the tgWebAppStartParam value in localStorage
+	const tgWebAppStartParamLocalStorage = computed(() => {
+		return localStorage.getItem('tgWebAppStartParam');
+	});
+
+	onMounted(() => {
+		// check if there is something in the query param tgWebAppStartParam
+		if(tgWebAppStartParam.value) {
+			// save it to localStorage
+			localStorage.setItem('tgWebAppStartParam', tgWebAppStartParam.value);
+		}
 	});
 
 </script>
