@@ -18,7 +18,7 @@
 						href="#"
 						v-if="!solanaStore.wallet"
 						class="btn btn-sm btn-primary rounded-pill"
-						@click.prevent="solanaStore.mobilnodeoneConnect"
+						@click.prevent="solanaStore.mobileConnect"
 					>Connect Wallet</a>
 					<a href="#" v-else class="btn btn-sm btn-primary rounded-pill">
 						<!-- show wallet address with ellipsis -->

@@ -92,6 +92,7 @@
 			padding-left: 0.5rem
 
 		.select-wallet
+			white-space: nowrap
 			padding: 0.25rem 1rem 0.25rem 0
 			margin-bottom: 0
 			color: var(--bs-body-color)
