@@ -167,7 +167,7 @@
 		queryString.append('dapp_encryption_public_key', useRuntimeConfig().public.walletPK);
 		queryString.append('transaction', transaction);
 		queryString.append('nonce', encodeResData.nonce);
-		queryString.append('redirect_link', `${ useRuntimeConfig().public.appURL }/telegram-bypass?startapp=${ useRoute().query.tgWebAppStartParam }&signed=1`);
+		queryString.append('redirect_link', encodeURI(`${ useRuntimeConfig().public.appURL }/telegram-bypass?startapp=${ useRoute().query.tgWebAppStartParam }&signed=1`));
 		queryString.append('payload', encodeResData.payload);
 
 

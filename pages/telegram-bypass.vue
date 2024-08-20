@@ -37,6 +37,7 @@
 		newParams.append('encryption-public-key', useRoute().query.phantom_encryption_public_key);
 		newParams.append('public-key', payloadData.value.public_key);
 		newParams.append('session', payloadData.value.session);
+
 		const signed = useRoute().query.signed;
 		if(!signed) document.location.href = 'https://t.me/lunadebugbot/blinks?startapp=' + btoa(newParams.toString());
 
