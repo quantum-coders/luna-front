@@ -13,7 +13,7 @@
 				<platform-theme-switcher />
 
 				<button
-					v-if="!walletConnected && !wallet"
+					v-if="!walletConnected && !solana.wallet"
 					class="connect-to-wallet-button"
 					@click="connectToWallet"
 				>Connect to Wallet
@@ -21,7 +21,7 @@
 
 				<div class="wallet" v-else>
 					<!-- show wallet address with ellipsis -->
-					{{ wallet.slice(0, 4) }}...{{ wallet.slice(-4) }}
+					{{ solana.wallet.slice(0, 4) }}...{{ solana.wallet.slice(-4) }}
 
 					<a href="#" @click.prevent="disconnectWallet">
 						<icon name="fluent:plug-disconnected-20-filled" />
@@ -65,8 +65,6 @@
 	});
 
 	const walletJustConnected = ref(false);
-
-	const wallet = ref('');
 
 	// check if wallet is in localStorage
 	if(localStorage.getItem('lunaMiniAppPK')) {
@@ -131,8 +129,8 @@
 		localStorage.removeItem('lunaMiniAppPK');
 		localStorage.removeItem('lunaMiniAppWalletSession');
 		localStorage.removeItem('lunaMiniAppEncryptionPK');
-		wallet.value = '';
 		walletJustConnected.value = false;
+		solana.wallet = '';
 	};
 
 	const signTransaction = (transaction, action) => {
@@ -187,7 +185,7 @@
 				localStorage.setItem('lunaMiniAppEncryptionPK', startAppParams.get('encryption-public-key'));
 				walletJustConnected.value = true;
 
-				wallet.value = startAppParams.get('public-key');
+				solana.wallet = startAppParams.get('public-key');
 			}
 		});
 
