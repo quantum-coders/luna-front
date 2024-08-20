@@ -10,7 +10,7 @@
 	const startApp = ref('');
 
 	const decodeWalletPayload = async () => {
-		const { data, error } = await useBaseFetch('/web3/decode-wallet', {
+		const { data, error } = await useFetch(`${ useRuntimeConfig().public.baseURL }/web3/decode-wallet`, {
 			method: 'POST',
 			body: JSON.stringify({
 				encryptionPK: useRoute().query.phantom_encryption_public_key,

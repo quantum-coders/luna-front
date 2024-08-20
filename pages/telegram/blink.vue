@@ -51,6 +51,10 @@
 </template>
 
 <script setup>
+	import nacl from 'tweetnacl';
+	import bs58 from 'bs58';
+	import { Buffer } from 'buffer';
+
 	useHead({
 		script: [
 			{
@@ -133,8 +137,42 @@
 		solana.wallet = '';
 	};
 
-	const signTransaction = (transaction, action) => {
+	const signTransaction = async (transaction, action) => {
 		console.log('Signing transaction', transaction, action);
+
+		const transactionBuffer = Buffer.from(transaction, 'base64');
+		transaction = bs58.encode(transactionBuffer);
+
+		const payload = {
+			transaction,
+			session: localStorage.getItem('lunaMiniAppWalletSession'),
+			sendOptions: {},
+		};
+
+		const encodeRes = await useFetch(`${ useRuntimeConfig().public.baseURL }/web3/encode-wallet`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				encryptionPK: localStorage.getItem('lunaMiniAppEncryptionPK'),
+				payload,
+			}),
+		});
+
+		const encodeResData = encodeRes.data.value.data;
+
+		// create query string
+		const queryString = new URLSearchParams();
+
+		queryString.append('dapp_encryption_public_key', localStorage.getItem('lunaMiniAppEncryptionPK'));
+		queryString.append('transaction', transaction);
+		queryString.append('nonce', encodeResData.nonce);
+		queryString.append('redirect_link', `${ useRuntimeConfig().public.appURL }/telegram-bypass`);
+		queryString.append('payload', encodeResData.payload);
+
+		const transactionDeepLink = `https://phantom.app/ul/v1/signAndSendTransaction?${ queryString.toString() }`;
+		window.open(transactionDeepLink, '_blank');
 	};
 
 	const transactionSuccessful = () => {
