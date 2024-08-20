@@ -1,7 +1,4 @@
 <template>
-	<pre>{{ useRoute().query }}</pre>
-	<pre>{{ payloadData }}</pre>
-	<pre>{{ startApp }}</pre>
 </template>
 
 <script setup>

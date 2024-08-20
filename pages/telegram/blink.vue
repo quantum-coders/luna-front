@@ -183,6 +183,10 @@
 		const transactionDeepLink = `https://phantom.app/ul/v1/signAndSendTransaction?${ queryString.toString() }`;
 		console.log('Transaction deep link', transactionDeepLink);
 		window.open(transactionDeepLink, '_blank');
+
+		// wait 3 seconds
+		await new Promise(resolve => setTimeout(resolve, 3000));
+		window.Telegram.WebApp.close();
 	};
 
 	const transactionSuccessful = () => {
