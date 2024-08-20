@@ -13,18 +13,13 @@
 				<platform-theme-switcher />
 
 				<button
-					class="btn text-nowrap btn-primary"
-					@click="connectToPhantom"
+					class="connect-to-wallet-button"
+					@click="connectToWallet"
 				>Connect to Wallet
 				</button>
 			</div>
 		</header>
-
 		<div class="the-blink" v-if="blink">
-			<div v-if="!!embed && !solanaStore.wallet" class="connect-embed">
-				<solana-wallet-connect />
-			</div>
-
 			<solana-emoji-rain
 				class="emoji-rain"
 				:emojis="['⭐', '✨', '🌟', '🌙']"
@@ -44,18 +39,22 @@
 
 <script setup>
 
-	const createDeepLinkUrl = (appUrl, redirectUrl, publicKey) => {
-		const encodedAppUrl = encodeURIComponent(appUrl);
-		const encodedRedirectUrl = encodeURIComponent(redirectUrl);
-		return `https://phantom.app/ul/v1/connect?app_url=${ encodedAppUrl }&dapp_encryption_public_key=${ publicKey }&same_tab=true&redirect_link=${ encodedRedirectUrl }`;
-	};
+	useHead({
+		script: [
+			{
+				src: 'https://telegram.org/js/telegram-web-app.js',
+			},
+		],
+	});
 
-	const connectToPhantom = async () => {
+	const solana = useSolanaStore();
+
+	const connectToWallet = async () => {
 		try {
 			const publicKey = useRuntimeConfig().public.walletPK;
 			const appUrl = useRuntimeConfig().public.appURL;
 			const bypassLink = `${ appUrl }/debug3`;
-			const deepLinkUrl = createDeepLinkUrl(appUrl, bypassLink, publicKey);
+			const deepLinkUrl = solana.createConnectDeepLinkUrl(appUrl, bypassLink, publicKey, 'phantom');
 
 			window.open(deepLinkUrl, '_blank');
 		} catch(error) {
@@ -65,7 +64,7 @@
 
 	// get the b parameter from the query string
 	const { query } = useRoute();
-	const b = query.b;
+	const b = ref('');
 	const blink = ref(null);
 
 	const solanaStore = useSolanaStore();
@@ -80,7 +79,7 @@
 	const success = ref(false);
 
 	const fetchBlink = async () => {
-		const res = await useFetch(b);
+		const res = await useFetch(b.value);
 		blink.value = res.data.value;
 	};
 
@@ -111,8 +110,25 @@
 		}, 5000);
 	};
 
+	function waitForTelegramWebApp(callback) {
+		if(window.Telegram && window.Telegram.WebApp) {
+			callback();
+		} else {
+			setTimeout(() => waitForTelegramWebApp(callback), 100);
+		}
+	}
+
+
 	onMounted(() => {
-		fetchBlink();
+		waitForTelegramWebApp(function() {
+			// Execute your code here
+			console.log('Telegram Web App is ready');
+			console.log(window.Telegram);
+
+			b.value = 'https://appapi.lunadefi.ai/blinks/' + useRoute().query.tgWebAppStartParam;
+			fetchBlink();
+		});
+
 	});
 
 </script>
@@ -120,10 +136,11 @@
 <!--suppress SassScssResolvedByNameOnly -->
 <style lang="sass" scoped>
 
-	.connect-embed
-		position: absolute
-		right: 0
-		top: 0
+	.connect-to-wallet-button
+		border: 0
+		white-space: nowrap
+		padding: 0.25rem 1rem
+		border-radius: 1rem
 
 	.emoji-rain
 		z-index: 0

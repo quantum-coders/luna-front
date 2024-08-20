@@ -9,9 +9,12 @@
 			</div>
 
 			<div class="header-tools d-flex ms-auto align-items-center justify-content-end gap-2">
-				<platform-theme-switcher />
 
-				<solana-wallet-connect v-if="!useDevice().isMobile" />
+				<solana-wallet-connect v-if="!useDevice().isMobile">
+					<template #extraActions>
+						<platform-theme-switcher />
+					</template>
+				</solana-wallet-connect>
 
 				<div v-else class="mobile-connect d-block d-sm-none">
 					<a
