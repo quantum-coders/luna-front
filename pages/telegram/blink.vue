@@ -13,7 +13,7 @@
 				<platform-theme-switcher />
 
 				<button
-					v-if="!walletConnected"
+					v-if="!walletConnected && !wallet"
 					class="connect-to-wallet-button"
 					@click="connectToWallet"
 				>Connect to Wallet
@@ -22,6 +22,10 @@
 				<div class="wallet" v-else>
 					<!-- show wallet address with ellipsis -->
 					{{ wallet.slice(0, 4) }}...{{ wallet.slice(-4) }}
+
+					<a href="#" @click.prevent="disconnectWallet">
+						<icon name="fluent:plug-disconnected-20-filled" />
+					</a>
 				</div>
 			</div>
 		</header>
@@ -123,6 +127,14 @@
 
 		return vars;
 	});
+
+	const disconnectWallet = () => {
+		localStorage.removeItem('lunaMiniAppPK');
+		localStorage.removeItem('lunaMiniAppWalletSession');
+		localStorage.removeItem('lunaMiniAppEncryptionPK');
+		wallet.value = '';
+		walletJustConnected.value = false;
+	};
 
 	const signTransaction = (transaction, action) => {
 		console.log('Signing transaction', transaction, action);

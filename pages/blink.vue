@@ -16,11 +16,12 @@
 					</template>
 				</solana-wallet-connect>
 
-				<div v-else class="mobile-connect d-block d-sm-none">
+				<div v-else class="mobile-connect d-flex gap-2 align-items-center d-sm-none">
+					<platform-theme-switcher />
 					<a
 						href="#"
 						v-if="!solanaStore.wallet"
-						class="btn btn-sm btn-primary rounded-pill"
+						class="btn btn-sm btn-primary rounded-pill text-nowrap"
 						@click.prevent="solanaStore.mobileConnect"
 					>Connect Wallet</a>
 					<a href="#" v-else class="btn btn-sm btn-primary rounded-pill">
