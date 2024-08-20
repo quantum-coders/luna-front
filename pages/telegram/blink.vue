@@ -20,7 +20,8 @@
 			</div>
 		</header>
 
-		<pre>{{ walletConnected }}</pre>
+		<pre>Wallet connected: {{ walletConnected }}</pre>
+		<pre>Wallet just connected: {{ walletJustConnected }}</pre>
 
 		<div class="the-blink" v-if="blink">
 			<solana-emoji-rain
