@@ -133,29 +133,29 @@
 			// Execute your code here
 			console.log('Telegram Web App is ready');
 
-			let appStart = useRoute().query.tgWebAppStartParam;
-			appStart = atob(appStart);
+			let startApp = useRoute().query.tgWebAppStartParam;
+			startApp = atob(startApp);
 
-			// appStart is a query string, convert it to an object
-			const appStartParams = new URLSearchParams(appStart);
+			// startApp is a query string, convert it to an object
+			const startAppParams = new URLSearchParams(startApp);
 
 			// print the params
-			for(const [key, value] of appStartParams) {
+			for(const [key, value] of startAppParams) {
 				console.log(key, value);
 			}
 
 			// check if luna-action is present
-			if(appStartParams.has('luna-action')) {
-				const lunaAction = appStartParams.get('luna-action');
+			if(startAppParams.has('luna-action')) {
+				const lunaAction = startAppParams.get('luna-action');
 				console.log('luna-action', lunaAction);
 
 				b.value = 'https://appapi.lunadefi.ai/blinks/' + lunaAction;
 				fetchBlink();
 			}
 
-			if(appStartParams.has('pk') && appStartParams.has('session')) {
-				localStorage.setItem('lunaMiniAppPK', appStartParams.get('pk'));
-				localStorage.setItem('lunaMiniAppWalletSession', appStartParams.get('session'));
+			if(startAppParams.has('pk') && startAppParams.has('session')) {
+				localStorage.setItem('lunaMiniAppPK', startAppParams.get('pk'));
+				localStorage.setItem('lunaMiniAppWalletSession', startAppParams.get('session'));
 				walletJustConnected.value = true;
 			}
 		});
