@@ -13,16 +13,19 @@
 				<platform-theme-switcher />
 
 				<button
+					v-if="!walletConnected"
 					class="connect-to-wallet-button"
 					@click="connectToWallet"
 				>Connect to Wallet
 				</button>
+
+				<div class="wallet" v-else>
+					<!-- show wallet address with ellipsis -->
+					{{ wallet.slice(0, 4) }}...{{ wallet.slice(-4) }}
+				</div>
 			</div>
 		</header>
-
-		<pre>Wallet connected: {{ walletConnected }}</pre>
-		<pre>Wallet just connected: {{ walletJustConnected }}</pre>
-
+		
 		<div class="the-blink" v-if="blink">
 			<solana-emoji-rain
 				class="emoji-rain"
@@ -42,7 +45,6 @@
 </template>
 
 <script setup>
-
 	useHead({
 		script: [
 			{
@@ -53,10 +55,17 @@
 
 	// compute the tgWebAppStartParam value in localStorage
 	const walletConnected = computed(() => {
-		return (localStorage.getItem('lunaMiniAppPK') && localStorage.getItem('lunaMiniAppWalletSession') || walletConnected.value);
+		return !!(localStorage.getItem('lunaMiniAppPK') && localStorage.getItem('lunaMiniAppWalletSession') || walletJustConnected.value);
 	});
 
 	const walletJustConnected = ref(false);
+
+	const wallet = ref('');
+
+	// check if wallet is in localStorage
+	if(localStorage.getItem('lunaMiniAppPK')) {
+		wallet.value = localStorage.getItem('lunaMiniAppPK');
+	}
 
 	const solana = useSolanaStore();
 
@@ -159,6 +168,8 @@
 				localStorage.setItem('lunaMiniAppWalletSession', startAppParams.get('session'));
 				localStorage.setItem('lunaMiniAppEncryptionPK', startAppParams.get('encryption-public-key'));
 				walletJustConnected.value = true;
+
+				wallet.value = startAppParams.get('public-key');
 			}
 		});
 
