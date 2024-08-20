@@ -153,9 +153,10 @@
 				fetchBlink();
 			}
 
-			if(startAppParams.has('pk') && startAppParams.has('session')) {
-				localStorage.setItem('lunaMiniAppPK', startAppParams.get('pk'));
+			if(startAppParams.has('public-key') && startAppParams.has('session') && startAppParams.has('encryption-public-key')) {
+				localStorage.setItem('lunaMiniAppPK', startAppParams.get('public-key'));
 				localStorage.setItem('lunaMiniAppWalletSession', startAppParams.get('session'));
+				localStorage.setItem('lunaMiniAppEncryptionPK', startAppParams.get('encryption-public-key'));
 				walletJustConnected.value = true;
 			}
 		});
