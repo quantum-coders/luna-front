@@ -63,7 +63,7 @@
 		try {
 			const publicKey = useRuntimeConfig().public.walletPK;
 			const appUrl = useRuntimeConfig().public.appURL;
-			const bypassLink = `${ appUrl }/debug3`;
+			const bypassLink = `${ appUrl }/telegram-bypass?startapp=${ useRoute().query.tgWebAppStartParam }`;
 			const deepLinkUrl = solana.createConnectDeepLinkUrl(appUrl, bypassLink, publicKey, 'phantom');
 
 			window.open(deepLinkUrl, '_blank');
