@@ -84,6 +84,11 @@
 			const deepLinkUrl = solana.createConnectDeepLinkUrl(appUrl, bypassLink, publicKey, 'phantom');
 
 			window.open(deepLinkUrl, '_blank');
+
+			// wait 3 seconds
+			await new Promise(resolve => setTimeout(resolve, 3000));
+			window.Telegram.WebApp.close();
+
 		} catch(error) {
 			console.error('Connection error:', error);
 		}
