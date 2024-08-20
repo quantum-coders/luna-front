@@ -19,6 +19,9 @@
 				</button>
 			</div>
 		</header>
+
+		<pre>{{ walletConnected }}</pre>
+
 		<div class="the-blink" v-if="blink">
 			<solana-emoji-rain
 				class="emoji-rain"
@@ -46,6 +49,13 @@
 			},
 		],
 	});
+
+	// compute the tgWebAppStartParam value in localStorage
+	const walletConnected = computed(() => {
+		return (localStorage.getItem('lunaMiniAppPK') && localStorage.getItem('lunaMiniAppWalletSession') || walletConnected.value);
+	});
+
+	const walletJustConnected = ref(false);
 
 	const solana = useSolanaStore();
 
@@ -110,23 +120,44 @@
 		}, 5000);
 	};
 
-	function waitForTelegramWebApp(callback) {
+	const waitForTelegramWebApp = (callback) => {
 		if(window.Telegram && window.Telegram.WebApp) {
 			callback();
 		} else {
 			setTimeout(() => waitForTelegramWebApp(callback), 100);
 		}
-	}
-
+	};
 
 	onMounted(() => {
 		waitForTelegramWebApp(function() {
 			// Execute your code here
 			console.log('Telegram Web App is ready');
-			console.log(window.Telegram);
 
-			b.value = 'https://appapi.lunadefi.ai/blinks/' + useRoute().query.tgWebAppStartParam;
-			fetchBlink();
+			let appStart = useRoute().query.tgWebAppStartParam;
+			appStart = atob(appStart);
+
+			// appStart is a query string, convert it to an object
+			const appStartParams = new URLSearchParams(appStart);
+
+			// print the params
+			for(const [key, value] of appStartParams) {
+				console.log(key, value);
+			}
+
+			// check if luna-action is present
+			if(appStartParams.has('luna-action')) {
+				const lunaAction = appStartParams.get('luna-action');
+				console.log('luna-action', lunaAction);
+
+				b.value = 'https://appapi.lunadefi.ai/blinks/' + lunaAction;
+				fetchBlink();
+			}
+
+			if(appStartParams.has('pk') && appStartParams.has('session')) {
+				localStorage.setItem('lunaMiniAppPK', appStartParams.get('pk'));
+				localStorage.setItem('lunaMiniAppWalletSession', appStartParams.get('session'));
+				walletJustConnected.value = true;
+			}
 		});
 
 	});
