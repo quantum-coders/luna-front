@@ -39,6 +39,7 @@
 		} else {
 			console.log('Setting encryption public key in localStorage');
 			localStorage.setItem('lunaMiniAppEncryptionPK', encryptionPublicKey);
+			console.log('encryptionPublicKey', localStorage.getItem('lunaMiniAppEncryptionPK');
 		}
 
 		const newParams = new URLSearchParams();
