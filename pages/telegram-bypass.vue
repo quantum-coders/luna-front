@@ -14,7 +14,7 @@
 	const decodeWalletPayload = async () => {
 
 		const startAppParams = new URLSearchParams(startApp.value);
-		const epk = startAppParams.get('epk');
+		const epk = startAppParams.get('epk') || useRoute().query.phantom_encryption_public_key;
 
 		const { data, error } = await useFetch(`${ useRuntimeConfig().public.baseURL }/web3/decode-wallet`, {
 			method: 'POST',
@@ -35,16 +35,7 @@
 
 		// appStart is a query string, convert it to an object
 		const startAppParams = new URLSearchParams(startApp.value);
-
 		let encryptionPublicKey = useRoute().query.phantom_encryption_public_key;
-		console.log('encryptionPublicKey', encryptionPublicKey);
-		if(!encryptionPublicKey) {
-			encryptionPublicKey = localStorage.getItem('lunaMiniAppEncryptionPK');
-		} else {
-			console.log('Setting encryption public key in localStorage');
-			localStorage.setItem('lunaMiniAppEncryptionPK', encryptionPublicKey);
-			console.log('encryptionPublicKey', localStorage.getItem('lunaMiniAppEncryptionPK');
-		}
 
 		const newParams = new URLSearchParams();
 		newParams.append('luna-action', startAppParams.get('luna-action'));
@@ -53,6 +44,8 @@
 		newParams.append('session', payloadData.value.session);
 
 		const signed = startAppParams.get('signed');
+
+		console.log('signed', signed);
 
 		if(!signed) document.location.href = 'https://t.me/lunadebugbot/blinks?startapp=' + btoa(newParams.toString());
 
