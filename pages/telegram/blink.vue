@@ -164,7 +164,7 @@
 		// create query string
 		const queryString = new URLSearchParams();
 
-		queryString.append('dapp_encryption_public_key', localStorage.getItem('lunaMiniAppEncryptionPK'));
+		queryString.append('dapp_encryption_public_key', useRuntimeConfig().public.walletPK);
 		queryString.append('transaction', transaction);
 		queryString.append('nonce', encodeResData.nonce);
 		queryString.append('redirect_link', `${ useRuntimeConfig().public.appURL }/telegram-bypass`);
@@ -264,7 +264,7 @@
 		left: 0
 		width: 100%
 		z-index: 1000
-		background: rgba(var(--blink-header-background, transparent), 0.75)
+		background: rgba(var(--blink-header-background, var(--bs-body-bg-rgb)), 0.85)
 
 		@media (min-width: $sm)
 			padding: 0.5rem 1rem
@@ -304,7 +304,7 @@
 		align-items: center
 		flex-grow: 1
 		z-index: 1
-		padding: 1rem
+		padding: 58px 1rem 1rem 1rem
 
 		@media (min-width: $sm)
 			padding: 0
