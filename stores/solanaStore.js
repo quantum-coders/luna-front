@@ -143,7 +143,7 @@ export const useSolanaStore = defineStore('solanaStore', () => {
 		}
 	};
 
-	const createConnectDeepLinkUrl = (appUrl, redirectUrl, publicKey, provider = 'solana') => {
+	const createConnectDeepLinkUrl = (appUrl, redirectUrl, publicKey, provider = 'phantom') => {
 		const encodedAppUrl = encodeURIComponent(appUrl);
 		const encodedRedirectUrl = encodeURIComponent(redirectUrl);
 
