@@ -32,13 +32,20 @@
 		// appStart is a query string, convert it to an object
 		const startAppParams = new URLSearchParams(startApp.value);
 
+		let encryptionPublicKey = useRoute().query.phantom_encryption_public_key;
+		if(!encryptionPublicKey) {
+			encryptionPublicKey = localStorage.getItem('lunaMiniAppEncryptionPK');
+		} else {
+			localStorage.setItem('lunaMiniAppEncryptionPK', encryptionPublicKey);
+		}
+
 		const newParams = new URLSearchParams();
 		newParams.append('luna-action', startAppParams.get('luna-action'));
-		newParams.append('encryption-public-key', useRoute().query.phantom_encryption_public_key);
+		newParams.append('encryption-public-key', encryptionPublicKey);
 		newParams.append('public-key', payloadData.value.public_key);
 		newParams.append('session', payloadData.value.session);
 
-		const signed = useRoute().query.signed;
+		const signed = startAppParams.get('signed');
 		if(!signed) document.location.href = 'https://t.me/lunadebugbot/blinks?startapp=' + btoa(newParams.toString());
 
 	});

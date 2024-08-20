@@ -167,9 +167,13 @@
 		queryString.append('dapp_encryption_public_key', useRuntimeConfig().public.walletPK);
 		queryString.append('transaction', transaction);
 		queryString.append('nonce', encodeResData.nonce);
-		queryString.append('redirect_link', encodeURI(`${ useRuntimeConfig().public.appURL }/telegram-bypass?startapp=${ useRoute().query.tgWebAppStartParam }&signed=1`));
-		queryString.append('payload', encodeResData.payload);
 
+		let params = atob(useRoute().query.tgWebAppStartParam);
+		params = params + `&signed=1`;
+		params = btoa(params);
+
+		queryString.append('redirect_link', `${ useRuntimeConfig().public.appURL }/telegram-bypass?startapp=${ params }`);
+		queryString.append('payload', encodeResData.payload);
 
 		const transactionDeepLink = `https://phantom.app/ul/v1/signAndSendTransaction?${ queryString.toString() }`;
 		console.log('Transaction deep link', transactionDeepLink);
