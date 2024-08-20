@@ -25,7 +25,7 @@
 				</div>
 			</div>
 		</header>
-		
+
 		<div class="the-blink" v-if="blink">
 			<solana-emoji-rain
 				class="emoji-rain"
@@ -35,9 +35,11 @@
 				:spawn="success"
 			/>
 			<solana-blink
+				:class="{ 'not-connected' : !walletConnected }"
 				:blink-object="blink"
 				:blink-url="b"
 				:primaryColor="blink.primaryColor"
+				:sign-transaction="signTransaction"
 				@transaction-successful="transactionSuccessful"
 			/>
 		</div>
@@ -121,6 +123,10 @@
 		return vars;
 	});
 
+	const signTransaction = (transaction, action) => {
+		console.log('Signing transaction', transaction, action);
+	};
+
 	const transactionSuccessful = () => {
 		success.value = true;
 
@@ -198,6 +204,10 @@
 	.blink-wrapper
 		background: var(--blink-background, var(--bs-body-bg-rgb))
 		justify-content: center
+
+	.blink-card-wrapper.not-connected
+		pointer-events: none
+		opacity: 0.5
 
 	.blink-header
 		padding: 0.5rem 1rem

@@ -1,7 +1,6 @@
 <template>
 	<div class="blink-card-wrapper" :style="{ '--blink-primary-color': primaryColor || '#69F89B' }">
 
-
 		<div class="blink-card" v-if="blink" :class="mode">
 			<div class="card-connect" v-if="!!cardConnect">
 				<div class="d-none d-sm-block">
@@ -110,7 +109,7 @@
 
 	const solanaStore = useSolanaStore();
 
-	const emit = defineEmits([ 'transactionSuccessful' ]);
+	const emit = defineEmits(['transactionSuccessful']);
 
 	const props = defineProps({
 		blinkUrl: {
@@ -136,6 +135,10 @@
 		cardConnect: {
 			type: Boolean,
 			default: false,
+		},
+		signTransaction: {
+			type: [Function, null],
+			default: null,
 		},
 	});
 
@@ -204,10 +207,14 @@
 		}
 
 		try {
-			txResult.value = await useSolanaStore().signEncodedTransaction(res.data.value.transaction);
-			emit('transactionSuccessful', txResult.value);
-			action.loading = false;
+			if(props.signTransaction) {
+				await props.signTransaction(res.data.value.data.transaction, action);
 
+			} else {
+				txResult.value = await useSolanaStore().signEncodedTransaction(res.data.value.transaction);
+				emit('transactionSuccessful', txResult.value);
+				action.loading = false;
+			}
 		} catch(e) {
 			console.error(e);
 			action.loading = false;
