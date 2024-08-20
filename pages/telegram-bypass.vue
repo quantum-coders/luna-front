@@ -26,7 +26,7 @@
 	onMounted(async () => {
 		await decodeWalletPayload();
 
-		document.location.href = 'https://t.me/lunadebugbot/blinks?startapp=' + payloadData.value.payload + '-' + useRoute().query.phantom_encryption_public_key;
+		//document.location.href = 'https://t.me/lunadebugbot/blinks?startapp=' + payloadData.value.payload + '-' + useRoute().query.phantom_encryption_public_key;
 	});
 </script>
 
