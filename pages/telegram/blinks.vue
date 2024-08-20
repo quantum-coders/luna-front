@@ -10,24 +10,13 @@
 
 			<div class="header-tools d-flex ms-auto align-items-center justify-content-end gap-2">
 
-				<solana-wallet-connect v-if="!useDevice().isMobile">
-					<template #extraActions>
-						<platform-theme-switcher />
-					</template>
-				</solana-wallet-connect>
+				<platform-theme-switcher />
 
-				<div v-else class="mobile-connect d-block d-sm-none">
-					<a
-						href="#"
-						v-if="!solanaStore.wallet"
-						class="btn btn-sm btn-primary rounded-pill"
-						@click.prevent="solanaStore.mobileConnect"
-					>Connect Wallet</a>
-					<a href="#" v-else class="btn btn-sm btn-primary rounded-pill">
-						<!-- show wallet address with ellipsis -->
-						{{ solanaStore.wallet.slice(0, 4) }}...{{ solanaStore.wallet.slice(-4) }}
-					</a>
-				</div>
+				<button
+					class="btn text-nowrap btn-primary"
+					@click="connectToPhantom"
+				>Connect to Wallet
+				</button>
 			</div>
 		</header>
 
@@ -55,6 +44,25 @@
 
 <script setup>
 
+	const createDeepLinkUrl = (appUrl, redirectUrl, publicKey) => {
+		const encodedAppUrl = encodeURIComponent(appUrl);
+		const encodedRedirectUrl = encodeURIComponent(redirectUrl);
+		return `https://phantom.app/ul/v1/connect?app_url=${ encodedAppUrl }&dapp_encryption_public_key=${ publicKey }&same_tab=true&redirect_link=${ encodedRedirectUrl }`;
+	};
+
+	const connectToPhantom = async () => {
+		try {
+			const publicKey = useRuntimeConfig().public.walletPK;
+			const appUrl = useRuntimeConfig().public.appURL;
+			const bypassLink = `${ appUrl }/debug3`;
+			const deepLinkUrl = createDeepLinkUrl(appUrl, bypassLink, publicKey);
+
+			window.open(deepLinkUrl, '_blank');
+		} catch(error) {
+			console.error('Connection error:', error);
+		}
+	};
+
 	// get the b parameter from the query string
 	const { query } = useRoute();
 	const b = query.b;
@@ -68,7 +76,6 @@
 	if(!!query.mode) {
 		document.documentElement.setAttribute('data-bs-theme', query.mode);
 	}
-
 
 	const success = ref(false);
 
