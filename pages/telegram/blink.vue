@@ -51,7 +51,6 @@
 </template>
 
 <script setup>
-	import nacl from 'tweetnacl';
 	import bs58 from 'bs58';
 	import { Buffer } from 'buffer';
 
@@ -70,6 +69,7 @@
 
 	const solana = useSolanaStore();
 	const walletJustConnected = ref(false);
+	const transactionSignature = ref(false);
 
 	// check if wallet is in localStorage
 	if(localStorage.getItem('lunaMiniAppPK')) {
@@ -229,6 +229,11 @@
 				walletJustConnected.value = true;
 
 				solana.wallet = startAppParams.get('public-key');
+
+			} else if(startAppParams.has('signature')) {
+
+				transactionSignature.value = startAppParams.get('signature');
+				transactionSuccessful();
 			}
 		});
 
