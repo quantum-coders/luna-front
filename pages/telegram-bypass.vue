@@ -9,11 +9,17 @@
 	const payloadData = ref('');
 	const startApp = ref('');
 
+	startApp.value = atob(useRoute().query.startapp);
+
 	const decodeWalletPayload = async () => {
+
+		const startAppParams = new URLSearchParams(startApp.value);
+		const epk = startAppParams.get('epk');
+
 		const { data, error } = await useFetch(`${ useRuntimeConfig().public.baseURL }/web3/decode-wallet`, {
 			method: 'POST',
 			body: JSON.stringify({
-				encryptionPK: useRoute().query.phantom_encryption_public_key,
+				encryptionPK: epk,
 				nonce: useRoute().query.nonce,
 				payload: useRoute().query.data,
 			}),
@@ -26,8 +32,6 @@
 	// redirect on mounted
 	onMounted(async () => {
 		await decodeWalletPayload();
-
-		startApp.value = atob(useRoute().query.startapp);
 
 		// appStart is a query string, convert it to an object
 		const startAppParams = new URLSearchParams(startApp.value);
@@ -49,7 +53,8 @@
 		newParams.append('session', payloadData.value.session);
 
 		const signed = startAppParams.get('signed');
-		//if(!signed) document.location.href = 'https://t.me/lunadebugbot/blinks?startapp=' + btoa(newParams.toString());
+
+		if(!signed) document.location.href = 'https://t.me/lunadebugbot/blinks?startapp=' + btoa(newParams.toString());
 
 	});
 </script>

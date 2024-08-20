@@ -169,7 +169,7 @@
 		queryString.append('nonce', encodeResData.nonce);
 
 		let params = atob(useRoute().query.tgWebAppStartParam);
-		params = params + `&signed=1`;
+		params = params + `&signed=1&epk=${ localStorage.getItem('lunaMiniAppEncryptionPK') }`;
 		params = btoa(params);
 
 		queryString.append('redirect_link', `${ useRuntimeConfig().public.appURL }/telegram-bypass?startapp=${ params }`);
