@@ -76,7 +76,6 @@
 		solana.wallet = localStorage.getItem('lunaMiniAppPK');
 	}
 
-
 	const connectToWallet = async () => {
 		try {
 			const publicKey = useRuntimeConfig().public.walletPK;
@@ -172,6 +171,7 @@
 		queryString.append('payload', encodeResData.payload);
 
 		const transactionDeepLink = `https://phantom.app/ul/v1/signAndSendTransaction?${ queryString.toString() }`;
+		console.log('Transaction deep link', transactionDeepLink);
 		window.open(transactionDeepLink, '_blank');
 	};
 
