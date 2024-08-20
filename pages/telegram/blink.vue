@@ -68,14 +68,14 @@
 		return !!(localStorage.getItem('lunaMiniAppPK') && localStorage.getItem('lunaMiniAppWalletSession') || walletJustConnected.value);
 	});
 
+	const solana = useSolanaStore();
 	const walletJustConnected = ref(false);
 
 	// check if wallet is in localStorage
 	if(localStorage.getItem('lunaMiniAppPK')) {
-		wallet.value = localStorage.getItem('lunaMiniAppPK');
+		solana.wallet = localStorage.getItem('lunaMiniAppPK');
 	}
 
-	const solana = useSolanaStore();
 
 	const connectToWallet = async () => {
 		try {
