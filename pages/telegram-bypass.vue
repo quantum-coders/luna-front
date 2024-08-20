@@ -33,9 +33,11 @@
 		const startAppParams = new URLSearchParams(startApp.value);
 
 		let encryptionPublicKey = useRoute().query.phantom_encryption_public_key;
+		console.log('encryptionPublicKey', encryptionPublicKey);
 		if(!encryptionPublicKey) {
 			encryptionPublicKey = localStorage.getItem('lunaMiniAppEncryptionPK');
 		} else {
+			console.log('Setting encryption public key in localStorage');
 			localStorage.setItem('lunaMiniAppEncryptionPK', encryptionPublicKey);
 		}
 
@@ -46,7 +48,7 @@
 		newParams.append('session', payloadData.value.session);
 
 		const signed = startAppParams.get('signed');
-		if(!signed) document.location.href = 'https://t.me/lunadebugbot/blinks?startapp=' + btoa(newParams.toString());
+		//if(!signed) document.location.href = 'https://t.me/lunadebugbot/blinks?startapp=' + btoa(newParams.toString());
 
 	});
 </script>
