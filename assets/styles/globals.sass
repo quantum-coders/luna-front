@@ -1,5 +1,6 @@
-/* Generals */
+@import "bootstrap/scss/mixins"
 
+/* Generals */
 *
 	position: relative
 
@@ -78,6 +79,9 @@ html[data-bs-theme='dark']
 	height: 100%
 	overflow-y: auto
 
+	&.no-gutter
+		scrollbar-gutter: auto
+
 .alert
 	border: 0
 
@@ -120,3 +124,47 @@ html[data-bs-theme='dark']
 
 svg.icon
 	vertical-align: baseline !important
+
+// Container Queries Grid System
+// ---------------------------------------------------------------------------------------------------------------------
+
+// Container Query grid
+
+.c-row
+	@include make-row()
+	container-type: inline-size
+	container-name: row
+	margin-top: calc(-1 * var(--bs-gutter-y))
+	margin-right: calc(-0.5 * var(--bs-gutter-x))
+	margin-left: calc(-0.5 * var(--bs-gutter-x))
+
+	& > *
+		flex-shrink: 0
+		width: 100%
+		max-width: 100%
+		padding-right: calc(var(--bs-gutter-x) * 0.5)
+		padding-left: calc(var(--bs-gutter-x) * 0.5)
+		margin-top: var(--bs-gutter-y)
+
+	&.g-0
+		--bs-gutter-x: 0
+
+	.col
+		@include make-col-ready()
+		@include make-col()
+
+	// iterate from 1 to 12
+	@for $i from 1 through 12
+		.col-#{$i}
+			@include make-col-ready()
+			@include make-col($i)
+
+	// iterate breakpoints
+	$sizes: (s100: 100px, s200: 200px, s300: 300px, s400: 400px, sm: $sm, md: $md, lg: $lg, xl: $xl, xxl: $xxl)
+
+	@each $name, $size in $sizes
+		@container row (min-width: #{$size})
+			@for $i from 1 through 12
+				.col-#{$name}-#{$i}
+					@include make-col-ready()
+					@include make-col($i)

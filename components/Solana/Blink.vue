@@ -1,5 +1,8 @@
 <template>
-	<div class="blink-card-wrapper" :style="{ '--blink-primary-color': primaryColor || '#69F89B' }">
+	<div
+		class="blink-card-wrapper"
+		:style="{ '--blink-primary-color': primaryColor || '#69F89B', '--blink-complementary-color': complementaryColor }"
+	>
 
 		<div class="blink-card" v-if="blink" :class="mode">
 			<div class="card-connect" v-if="!!cardConnect">
@@ -30,67 +33,69 @@
 				<p class="mb-0">{{ blink.description }}</p>
 			</div>
 
-			<div class="blink-actions" v-if="!blink.links?.actions">
-				<button class="btn btn-primary w-100">{{ blink.label }}</button>
-			</div>
-
-			<div class="blink-actions gap-2 d-flex flex-wrap" v-else>
-				<div class="alert alert-success w-100 text-center" v-if="txResult">
-					Great, transaction was successful. <a :href="txResult" target="_blank">Go to transaction</a>
+			<slot>
+				<div class="blink-actions" v-if="!blink.links?.actions">
+					<button class="btn btn-primary w-100">{{ blink.label }}</button>
 				</div>
-				<template v-for="a in blink.links.actions">
-					<article
-						class="action"
-						:class="`parameters-count-${ a.parameters.length }`"
-					>
-						<template v-if="!a.parameters">
-							<button
-								@click.prevent="postBlink(a)"
-								class="btn btn-primary w-100 solo-action"
-								:class="{ 'btn-loading': a.loading }"
-							>{{ a.label }}
-							</button>
-						</template>
 
-						<template v-else>
-							<!-- input group -->
-							<div class="input-group">
-								<template v-for="p in a.parameters">
-									<!-- label -->
-									<div class="d-flex flex-grow-1" v-if="!p.hidden">
+				<div class="blink-actions gap-2 d-flex flex-wrap" v-else>
+					<div class="alert alert-success w-100 text-center" v-if="txResult">
+						Great, transaction was successful. <a :href="txResult" target="_blank">Go to transaction</a>
+					</div>
+					<template v-for="a in blink.links.actions">
+						<article
+							class="action"
+							:class="`parameters-count-${ a.parameters.length }`"
+						>
+							<template v-if="!a.parameters">
+								<button
+									@click.prevent="postBlink(a)"
+									class="btn btn-primary w-100 solo-action"
+									:class="{ 'btn-loading': a.loading }"
+								>{{ a.label }}
+								</button>
+							</template>
+
+							<template v-else>
+								<!-- input group -->
+								<div class="input-group">
+									<template v-for="p in a.parameters">
+										<!-- label -->
+										<div class="d-flex flex-grow-1" v-if="!p.hidden">
 										<span
 											v-if="!!p.preLabel"
 											class="input-group-text"
 											id="basic-addon1"
 										>{{ p.preLabel }}</span>
-										<input
-											type="text"
-											class="form-control"
-											:placeholder="p.label"
-											v-model="p.value"
-											:name="p.name"
-											:disabled="a.loading"
-											:readonly="!!p.readOnly"
-										/>
-										<span
-											v-if="!!p.postLabel"
-											class="input-group-text"
-											id="basic-addon1"
-										>{{ p.postLabel }}</span>
-									</div>
-								</template>
-								<button
-									class="btn btn-primary"
-									:class="{ 'btn-loading': a.loading }"
-									@click="postBlink(a)"
-									:disabled="solveButtonDisabled(a)"
-								>{{ a.label }}
-								</button>
-							</div>
-						</template>
-					</article>
-				</template>
-			</div>
+											<input
+												type="text"
+												class="form-control"
+												:placeholder="p.label"
+												v-model="p.value"
+												:name="p.name"
+												:disabled="a.loading"
+												:readonly="!!p.readOnly"
+											/>
+											<span
+												v-if="!!p.postLabel"
+												class="input-group-text"
+												id="basic-addon1"
+											>{{ p.postLabel }}</span>
+										</div>
+									</template>
+									<button
+										class="btn btn-primary"
+										:class="{ 'btn-loading': a.loading }"
+										@click="postBlink(a)"
+										:disabled="solveButtonDisabled(a)"
+									>{{ a.label }}
+									</button>
+								</div>
+							</template>
+						</article>
+					</template>
+				</div>
+			</slot>
 
 			<p class="powered">
 				Powered by
@@ -130,7 +135,7 @@
 		},
 		primaryColor: {
 			type: String,
-			default: '',
+			default: '#69F89B',
 		},
 		cardConnect: {
 			type: Boolean,
@@ -143,6 +148,16 @@
 	});
 
 	const blink = ref(null);
+
+	// calculate the complementary color from the primary color, black or white
+	const complementaryColor = computed(() => {
+		const hex = props.primaryColor.replace('#', '');
+		const r = parseInt(hex.substring(0, 2), 16);
+		const g = parseInt(hex.substring(2, 4), 16);
+		const b = parseInt(hex.substring(4, 6), 16);
+		const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+		return (yiq >= 128) ? 'black' : 'white';
+	});
 
 	// fetch the b
 	const fetchBlink = async () => {
@@ -232,6 +247,7 @@
 	.btn.btn-primary
 		background: var(--blink-primary-color, #69F89B)
 		border-color: var(--blink-primary-color, #69F89B)
+		color: var(--blink-complementary-color, white)
 
 	.blink-card-wrapper
 		container-type: inline-size

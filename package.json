@@ -28,6 +28,7 @@
 		"base64-js": "^1.5.1",
 		"bootstrap": "^5.2.3",
 		"bs58": "^6.0.0",
+		"click-outside-vue3": "^4.0.1",
 		"jquery": "^3.7.0",
 		"marked": "^13.0.2",
 		"nuxt": "^3.12.2",
