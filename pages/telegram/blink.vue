@@ -52,7 +52,8 @@
 
 				<template #actions v-if="transactionSignature">
 					<div class="alert alert-success">
-						<p class="mb-0">Champion! You have successfully signed the transaction.<br><a :href="`https://solscan.io/tx/${ transactionSignature }`">Here the proof</a>.</p>
+						<p class="mb-0">Champion! You have successfully signed the transaction.<br><a :href="`https://solscan.io/tx/${ transactionSignature }`">Here the proof</a>.
+						</p>
 					</div>
 				</template>
 			</solana-blink>
@@ -72,11 +73,6 @@
 		],
 	});
 
-	// compute the tgWebAppStartParam value in localStorage
-	const walletConnected = computed(() => {
-		return !!(localStorage.getItem('lunaMiniAppPK') && localStorage.getItem('lunaMiniAppWalletSession') || walletJustConnected.value);
-	});
-
 	const solana = useSolanaStore();
 	const walletJustConnected = ref(false);
 	const transactionSignature = ref(false);
@@ -85,6 +81,11 @@
 	if(localStorage.getItem('lunaMiniAppPK')) {
 		solana.wallet = localStorage.getItem('lunaMiniAppPK');
 	}
+
+	// compute the tgWebAppStartParam value in localStorage
+	const walletConnected = computed(() => {
+		return !!((localStorage.getItem('lunaMiniAppPK') && localStorage.getItem('lunaMiniAppWalletSession') || walletJustConnected.value) && solana.wallet);
+	});
 
 	const connectToWallet = async () => {
 		try {
