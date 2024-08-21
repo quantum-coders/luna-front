@@ -50,7 +50,7 @@
 					<div class="alert not-connected">Please connect your wallet before using this blink</div>
 				</template>
 
-				<template #actions>
+				<template #actions v-if="transactionSignature">
 					<div class="alert alert-success">
 						<p class="mb-0">Champion! You have successfully signed the transaction.<br><a :href="`https://solscan.io/tx/${ transactionSignature }`">Here the proof</a>.</p>
 					</div>
