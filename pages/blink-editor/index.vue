@@ -1,5 +1,6 @@
 <template>
 	<section class="blink-editor">
+		<platform-loading :active="!!loading" :is-full-page="false" />
 		<div class="scroll-wrapper no-gutter">
 			<div class="connect" v-if="!solana.wallet">
 				<div class="copy">
@@ -285,6 +286,8 @@
 			}
 		}
 
+		loading.value = true;
+
 		// Create blink in the database
 		const res = await useBaseFetch('/blinks', {
 			method: 'POST',
@@ -295,11 +298,15 @@
 			usePrettyToast().errorToast('Error generating blink');
 		}
 
+		usePrettyToast().successToast('Blink generated successfully');
+
 		let queryString = new URLSearchParams(extraParams).toString();
 		queryString = queryString ? '?' + encodeURIComponent(queryString) : '';
 
-		dialectLink.value = 'https://dial.to/?action=solana-action:' + queryString;
-		finalLink.value = baseLink + queryString;
+		finalLink.value = `${ useRuntimeConfig().public.baseURL }/cb-${ res.data.value.data.uid }`;
+		dialectLink.value = 'https://dial.to/?action=solana-action:' + finalLink.value;
+
+		loading.value = false;
 	};
 
 </script>
