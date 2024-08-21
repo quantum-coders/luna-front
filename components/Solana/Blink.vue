@@ -25,6 +25,7 @@
 			</div>
 
 			<div class="blink-image mb-2">
+				<slot name="image"></slot>
 				<img :src="blink.icon" alt="Blink" />
 			</div>
 
@@ -33,7 +34,7 @@
 				<p class="mb-0">{{ blink.description }}</p>
 			</div>
 
-			<slot>
+			<slot name="actions">
 				<div class="blink-actions" v-if="!blink.links?.actions">
 					<button class="btn btn-primary w-100">{{ blink.label }}</button>
 				</div>

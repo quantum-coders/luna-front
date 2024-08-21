@@ -45,7 +45,17 @@
 				:primaryColor="blink.primaryColor"
 				:sign-transaction="signTransaction"
 				@transaction-successful="transactionSuccessful"
-			/>
+			>
+				<template #image v-if="!walletConnected">
+					<div class="alert not-connected">Please connect your wallet before using this blink</div>
+				</template>
+
+				<template #actions>
+					<div class="alert alert-success">
+						<p class="mb-0">Champion! You have successfully signed the transaction.<br><a :href="`https://solscan.io/tx/${ transactionSignature }`">Here the proof</a>.</p>
+					</div>
+				</template>
+			</solana-blink>
 		</div>
 	</div>
 </template>
@@ -258,6 +268,16 @@
 <!--suppress SassScssResolvedByNameOnly -->
 <style lang="sass" scoped>
 
+	.alert.not-connected
+		position: absolute
+		z-index: 10
+		border: 1px solid $danger
+		width: calc(100% - 2rem)
+		margin: 1rem
+		background: $danger
+		text-align: center
+		outline: 0.25rem solid var(--bs-body-bg)
+
 	.connect-to-wallet-button
 		border: 0
 		white-space: nowrap
@@ -279,7 +299,6 @@
 
 	.blink-card-wrapper.not-connected
 		pointer-events: none
-		opacity: 0.5
 
 	.blink-header
 		padding: 0.5rem 1rem
