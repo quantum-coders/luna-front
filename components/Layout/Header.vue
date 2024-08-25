@@ -3,16 +3,17 @@
 
 		<div class="logo-wrapper">
 			<div class="header-icon">
-				<icon name="material-symbols:dark-mode-outline-rounded" />
+				<icon name="material-symbols:dark-mode-outline-rounded"/>
 			</div>
-			<svgo-luna-logo class="logo" />
+			<svgo-luna-logo class="logo"
+			/>
 		</div>
 
 		<div class="header-tools d-flex ms-auto align-items-center justify-content-end gap-2">
 			<solana-wallet-connect>
 				<template #extraActions>
 					<div class="theme-switcher-wrapper">
-						<platform-theme-switcher />
+						<platform-theme-switcher/>
 					</div>
 				</template>
 			</solana-wallet-connect>

@@ -5,7 +5,7 @@
 		<div class="blink-types mb-3">
 			<div class="c-row">
 				<template v-for="(type, t) in blinkEditor.types">
-					<div class="col-12 col-sm-6 col-md-4 flex-column d-flex">
+					<div class="col-12 col-sm-6 col-md-4 flex-column d-flex pb-3">
 						<article
 							class="blink-type"
 							@click="blinkEditor.selectedType = t"

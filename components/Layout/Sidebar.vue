@@ -11,6 +11,11 @@
 					<icon name="gala:editor" />
 				</nuxt-link>
 			</li>
+			<li>
+				<nuxt-link to="/blinks/me" exact-active-class="selected">
+					<icon name="gala:portrait1" />
+				</nuxt-link>
+			</li>
 		</ul>
 	</aside>
 </template>
