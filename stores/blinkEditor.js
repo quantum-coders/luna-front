@@ -26,6 +26,14 @@ export const useBlinkEditor = defineStore('blinkEditor', () => {
 			name: 'Transfer SOL',
 			description: 'Send SOL to your friends and family.',
 		},
+		'swap': {
+			name: 'Swap Tokens',
+			description: 'Swap tokens on the Solana blockchain.',
+		},
+		'create-nft-collection': {
+			name: 'Create NFT Collection',
+			description: 'Create your own NFT collection.',
+		},
 
 	};
 
