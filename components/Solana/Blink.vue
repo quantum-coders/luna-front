@@ -56,8 +56,10 @@
 							<!-- input group -->
 							<div class="input-group">
 								<template v-for="p in a.parameters">
-									<!-- label -->
-									<div class="d-flex flex-grow-1" v-if="!p.hidden">
+									<div class="d-flex flex-grow-1" v-if="p.name ==='metadata'">
+										<solana-metadata @update-metadata="p.value =  $event" />
+									</div>
+									<div class="d-flex flex-grow-1" v-if="!p.hidden && p.name !== 'metadata'">
 										<span
 											v-if="!!p.preLabel"
 											class="input-group-text"
@@ -192,7 +194,8 @@
 				url = url.replace(`{${ p.name }}`, p.value);
 			}
 		}
-
+		// uri encode the url
+		url = encodeURI(url);
 		const res = await useFetch(url, {
 			method: 'POST',
 			body: JSON.stringify({
