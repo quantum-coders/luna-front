@@ -45,7 +45,18 @@
 				:primaryColor="blink.primaryColor"
 				:sign-transaction="signTransaction"
 				@transaction-successful="transactionSuccessful"
-			/>
+			>
+				<template #image v-if="!walletConnected">
+					<div class="alert not-connected">Please connect your wallet before using this blink</div>
+				</template>
+
+				<template #actions v-if="transactionSignature">
+					<div class="alert alert-success">
+						<p class="mb-0">Champion! You have successfully signed the transaction.<br><a :href="`https://solscan.io/tx/${ transactionSignature }`">Here the proof</a>.
+						</p>
+					</div>
+				</template>
+			</solana-blink>
 		</div>
 	</div>
 </template>
@@ -62,11 +73,6 @@
 		],
 	});
 
-	// compute the tgWebAppStartParam value in localStorage
-	const walletConnected = computed(() => {
-		return !!(localStorage.getItem('lunaMiniAppPK') && localStorage.getItem('lunaMiniAppWalletSession') || walletJustConnected.value);
-	});
-
 	const solana = useSolanaStore();
 	const walletJustConnected = ref(false);
 	const transactionSignature = ref(false);
@@ -75,6 +81,11 @@
 	if(localStorage.getItem('lunaMiniAppPK')) {
 		solana.wallet = localStorage.getItem('lunaMiniAppPK');
 	}
+
+	// compute the tgWebAppStartParam value in localStorage
+	const walletConnected = computed(() => {
+		return !!((localStorage.getItem('lunaMiniAppPK') && localStorage.getItem('lunaMiniAppWalletSession') || walletJustConnected.value) && solana.wallet);
+	});
 
 	const connectToWallet = async () => {
 		try {
@@ -121,13 +132,18 @@
 
 		const vars = {};
 
-		if(blink.value.primaryColor) {
-			vars['--bs-btn-bg'] = blink.value.primaryColor;
+		if(blink.value.backgroundImage) {
+			vars['--blink-background'] = `${ blink.value.backgroundColor || '' } url('${ blink.value.backgroundImage }') ${ blink.value.backgroundPositionX } ${ blink.value.backgroundPositionY } / ${ blink.value.backgroundSize } ${ blink.value.backgroundAttachment } ${ blink.value.backgroundRepeat }`;
+			vars['--blink-header-background'] = 'var(--bs-body-bg-rgb)';
+		} else {
+			vars['--blink-background'] = blink.value.backgroundColor;
+			if(blink.value.background) {
+				vars['--blink-header-background'] = 'var(--bs-body-bg-rgb)';
+			}
 		}
 
-		if(blink.value.background) {
-			vars['--blink-background'] = blink.value.background;
-			vars['--blink-header-background'] = 'var(--bs-body-bg-rgb)';
+		if(blink.value.primaryColor) {
+			vars['--bs-btn-bg'] = blink.value.primaryColor;
 		}
 
 		return vars;
@@ -253,6 +269,16 @@
 <!--suppress SassScssResolvedByNameOnly -->
 <style lang="sass" scoped>
 
+	.alert.not-connected
+		position: absolute
+		z-index: 10
+		border: 1px solid $danger
+		width: calc(100% - 2rem)
+		margin: 1rem
+		background: $danger
+		text-align: center
+		outline: 0.25rem solid var(--bs-body-bg)
+
 	.connect-to-wallet-button
 		border: 0
 		white-space: nowrap
@@ -274,7 +300,6 @@
 
 	.blink-card-wrapper.not-connected
 		pointer-events: none
-		opacity: 0.5
 
 	.blink-header
 		padding: 0.5rem 1rem

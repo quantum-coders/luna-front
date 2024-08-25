@@ -24,6 +24,19 @@
 </script>
 
 <!--suppress SassScssResolvedByNameOnly -->
-<style lang="sass" scoped>
+<style lang="sass">
+	.vld-overlay
+		position: absolute
+		top: 0
+		left: 0
+		width: 100%
+		height: 100%
+
+		.vld-background
+			background-color: rgba(var(--bs-body-bg-rgb), 1)
+			opacity: 0.75
+
+		.vld-icon > svg
+			stroke: var(--bs-primary)
 
 </style>

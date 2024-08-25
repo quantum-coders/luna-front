@@ -70,7 +70,6 @@
 		document.documentElement.setAttribute('data-bs-theme', query.mode);
 	}
 
-
 	const success = ref(false);
 
 	const fetchBlink = async () => {
@@ -84,13 +83,18 @@
 
 		const vars = {};
 
-		if(blink.value.primaryColor) {
-			vars['--bs-btn-bg'] = blink.value.primaryColor;
+		if(blink.value.backgroundImage) {
+			vars['--blink-background'] = `${ blink.value.backgroundColor || '' } url('${ blink.value.backgroundImage }') ${ blink.value.backgroundPositionX } ${ blink.value.backgroundPositionY } / ${ blink.value.backgroundSize } ${ blink.value.backgroundAttachment } ${ blink.value.backgroundRepeat }`;
+			vars['--blink-header-background'] = 'var(--bs-body-bg-rgb)';
+		} else {
+			vars['--blink-background'] = blink.value.backgroundColor;
+			if(blink.value.background) {
+				vars['--blink-header-background'] = 'var(--bs-body-bg-rgb)';
+			}
 		}
 
-		if(blink.value.background) {
-			vars['--blink-background'] = blink.value.background;
-			vars['--blink-header-background'] = 'var(--bs-body-bg-rgb)';
+		if(blink.value.primaryColor) {
+			vars['--bs-btn-bg'] = blink.value.primaryColor;
 		}
 
 		return vars;

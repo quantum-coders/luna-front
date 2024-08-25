@@ -7,11 +7,10 @@ export const useAuth = () => {
 		authUser.value = user;
 	};
 
-
 	const getToken = () => {
 		if(process.client) return localStorage.getItem('accessToken');
 		return null;
-	}
+	};
 
 	const login = async ({
 		username,
@@ -40,7 +39,6 @@ export const useAuth = () => {
 
 		const headers = [];
 
-
 		return headers;
 	};
 
@@ -59,7 +57,7 @@ export const useAuth = () => {
 				localStorage.removeItem('switchedAuthToken');
 			}
 		}
-	}
+	};
 
 	const me = async (token) => {
 		if(!authUser.value) {
@@ -70,7 +68,7 @@ export const useAuth = () => {
 						method: 'GET',
 						// TODO: maybe we dont need to pass this
 						headers: [
-							[ 'Authorization', `Bearer ${ token }` ],
+							['Authorization', `Bearer ${ token }`],
 						],
 					});
 

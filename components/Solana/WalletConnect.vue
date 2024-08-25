@@ -1,7 +1,10 @@
 <template>
 	<wallet-multi-button>
 		<template #default="{ wallet, openModal, publicKeyTrimmed, copyAddress, addressCopied, disconnect, publicKeyBase58 }">
-			<div class="wallet-wrapper d-flex align-items-center gap-2" :class="{ 'connected': !!publicKeyBase58.value }">
+			<div
+				class="wallet-wrapper d-flex align-items-center gap-2"
+				:class="{ 'connected': !!publicKeyBase58.value }"
+			>
 				<template v-if="!!publicKeyBase58.value">
 					<wallet-icon class="wallet-icon" :wallet="wallet" />
 					<p class="abbreviated-wallet">{{ publicKeyTrimmed.value }}</p>
@@ -36,6 +39,7 @@
 <script setup>
 	import { useWallet, initWallet, WalletIcon } from 'solana-wallets-vue';
 	import { WalletMultiButton } from 'solana-wallets-vue';
+	import { useAuth } from '~/composables/useAuth';
 
 	const solanaStore = useSolanaStore();
 	const config = useRuntimeConfig();
@@ -74,6 +78,7 @@
 				// save accessToken to localStorage
 				localStorage.setItem('accessToken', connectData.token);
 				authStore.user = connectData.data;
+				useAuth().setUser(connectData.data);
 			}
 		} else {
 			localStorage.removeItem('accessToken');
