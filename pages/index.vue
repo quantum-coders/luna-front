@@ -61,6 +61,7 @@
 		container-type: size
 		display: flex
 		flex-grow: 1
+		overflow: clip
 
 		@container (max-width: 1300px)
 			.wis
