@@ -13,7 +13,7 @@
 			</div>
 
 			<div class="rim-audio" v-if="message.role === 'assistant' && !message.loading">
-				<chat-audio-player :audio-url="message.audio || ''" :loading="message.audioLoading || true" />
+				<chat-audio-player :audio-url="audio?.url || ''" :loading="message.audioLoading || true" />
 			</div>
 
 			<div class="rim-rich-content" v-if="message.rims">
@@ -79,6 +79,11 @@
 	const formattedTime = computed(() => {
 		const date = new Date(props.message.timestamp);
 		return date.toLocaleTimeString();
+	});
+
+	/// create a compued propertie to search on the key variants, the one with type audio
+	const audio = computed(() => {
+		return props.message?.variants.find(r => r.type === 'audio');
 	});
 
 </script>

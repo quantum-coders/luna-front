@@ -15,14 +15,19 @@
 	const prompt = ref('');
 
 	const chat = useChatStore();
+
+	// take from route the uid
+	const route = useRoute();
+	const uid = route.params.uid
+	console.info("uid", uid);
 	const addMessage = async () => {
 		if(prompt.value) {
-			chat.addMessage({
+			const msg = chat.addMessage({
 				role: 'user',
 				text: prompt.value,
 			});
 
-			chat.sendMessage(prompt.value);
+			chat.sendMessage(msg, uid);
 
 			prompt.value = '';
 

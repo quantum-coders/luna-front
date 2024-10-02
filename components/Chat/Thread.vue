@@ -49,7 +49,9 @@
 
 <script setup>
 	const chat = useChatStore();
-
+	const route = useRoute();
+	const uid = route.params.uid
+	console.info("uid", uid);
 	const addMessage = async (message) => {
 		if(message) {
 			chat.addMessage({
@@ -57,7 +59,7 @@
 				text: message,
 			});
 
-			await chat.sendMessage(message);
+			await chat.sendMessage(message, uid);
 			await nextTick();
 			chat.scrollToBottom();
 		}

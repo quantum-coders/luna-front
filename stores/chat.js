@@ -5,7 +5,17 @@ export const useChatStore = defineStore('chat', () => {
 
 	const messages = ref([]);
 	const wisMessage = ref(null);
+	const chatData = ref(null);
+	const messagesLoading = ref(false);
+	const errorMessages = ref(null);
 
+	const setChatData = (data) => {
+		chatData.value = data;
+	}
+
+	const cleanChatData = () => {
+		chatData.value = null;
+	}
 	const addMessage = (message) => {
 		// Add a unique ID to the message
 		message.uid = uuidv4();
@@ -26,22 +36,34 @@ export const useChatStore = defineStore('chat', () => {
 		thread.scrollTo({ top: thread.scrollHeight, behavior: 'smooth' });
 	};
 
-	const sendMessage = async (message) => {
+	const sendMessage = async (message, uidChat) => {
 
+		if(!uidChat) {
+			throw new Error('uidChat is required');
+			return;
+		}
 		// Create a message for assistant
-		const assistantMessage = addMessage({ role: 'assistant', text: '', loading: true });
+		const assistantMessage = addMessage({ role: 'assistant', text: '', loading: true, variants: [ ] });
 
 		// Scroll to the bottom of the thread
 		scrollToBottom();
-
+		const token = localStorage.getItem('accessToken');
+		console.info("---------------->User Token:", token);
 		const res = await $fetch(`${ useRuntimeConfig().public.baseURL }/ai/message/rim`, {
 			method: 'POST',
 			body: {
 				model: 'gpt-4',
-				prompt: message,
+				prompt: message.text,
+				uidChat,
+				uidMessage: message.uid,
+				uidMessageAssistant: assistantMessage.uid,
 				properties: {
 					wallet: useSolanaStore().wallet,
 				},
+			},
+			// add authorization header
+			headers: {
+				'Authorization': `Bearer ${ token}`,
 			},
 			responseType: 'stream',
 		});
@@ -63,10 +85,11 @@ export const useChatStore = defineStore('chat', () => {
 
 				const audioRes = await useFetch(`${ useRuntimeConfig().public.baseURL }/ai/text-to-audio`, {
 					method: 'POST',
-					body: { text: messages.value[index].text },
+					body: { text: messages.value[index].text, uidMessage: messages.value[index].uid },
 				});
-
-				messages.value[index].audio = audioRes.data.value.data;
+				messages.value[index].variants.push({
+					...audioRes.data.value.data,
+				});
 				messages.value[index].audioLoading = false;
 
 				// wait 5 seconds
@@ -139,7 +162,12 @@ export const useChatStore = defineStore('chat', () => {
 		wisMessage,
 		addMessage,
 		sendMessage,
+		setChatData,
+		cleanChatData,
 		openWis,
+		chatData,
+		messagesLoading,
+		errorMessages,
 		closeWis,
 		scrollToBottom,
 	};

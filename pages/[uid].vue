@@ -23,6 +23,7 @@
 		</main>
 		<main v-else class="chat">
 			<!--<a href="#" class="btn btn-primary" @click.prevent="toggle">Toggle Sidebar</a>-->
+
 			<chat-thread />
 			<div class="chat-controls">
 				<chat-input />
@@ -45,6 +46,8 @@
 		'--inner-wrapper-width': '1000px',
 	};
 
+
+
 	const chat = useChatStore();
 
 	const connectWallet = () => {
@@ -53,8 +56,9 @@
 		document.querySelector('.swv-button-trigger').click();
 	};
 
-	onMounted(() => {
-		useChat().initializeChat();
+	await useChat().getChat();
+	onMounted( async () => {
+		await useChat().getChatHistory();
 	});
 
 </script>
