@@ -158,7 +158,6 @@
 	};
 
 	const signTransaction = async (transaction, action) => {
-		console.log('Signing transaction', transaction, action);
 
 		const transactionBuffer = Buffer.from(transaction, 'base64');
 		transaction = bs58.encode(transactionBuffer);
@@ -241,7 +240,6 @@
 			// check if luna-action is present
 			if(startAppParams.has('luna-action')) {
 				const lunaAction = startAppParams.get('luna-action');
-				console.log('luna-action', lunaAction);
 
 				b.value = 'https://appapi.lunadefi.ai/blinks/' + lunaAction;
 				fetchBlink();

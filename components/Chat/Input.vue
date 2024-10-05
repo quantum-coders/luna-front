@@ -13,24 +13,21 @@
 
 <script setup>
 	const prompt = ref('');
-
 	const chat = useChatStore();
-
-	// take from route the uid
 	const route = useRoute();
-	const uid = route.params.uid
-	console.info("uid", uid);
+	let uid = route.params.uid
 	const addMessage = async () => {
+		let isInitialMessage = !uid;
 		if(prompt.value) {
-			const msg = chat.addMessage({
+			const msg = await chat.addMessage({
 				role: 'user',
 				text: prompt.value,
-			});
-
-			chat.sendMessage(msg, uid);
-
+			}, isInitialMessage);
+			if(!uid) {
+				uid = msg.uidChat;
+			}
 			prompt.value = '';
-
+			chat.sendMessage(msg, uid);
 			await nextTick();
 			chat.scrollToBottom();
 		}

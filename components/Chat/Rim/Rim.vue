@@ -1,8 +1,8 @@
 <template>
 	<div class="rim-wrapper">
 		<div class="avatar">
-			<icon v-if="message.role === 'assistant'" name="material-symbols:dark-mode-outline-rounded" />
-			<icon v-if="message.role === 'user'" name="bx:happy-alt" />
+			<icon v-if="message.role === 'assistant'" name="material-symbols:dark-mode-outline-rounded"/>
+			<icon v-if="message.role === 'user'" name="bx:happy-alt"/>
 		</div>
 		<div class="rim">
 			<!-- bootstrap loading spinner -->
@@ -13,25 +13,35 @@
 			</div>
 
 			<div class="rim-audio" v-if="message.role === 'assistant' && !message.loading">
-				<chat-audio-player :audio-url="audio?.url || ''" :loading="message.audioLoading || true" />
+				<a
+					v-if="!audio?.url && !message?.audioGenerateLoading"
+					@click="generateAudio(message)"
+					class="generate-audio-wrapper text-primary generate-audio-icon d-flex align-items-center justify-content-start"
+					title="Generate Audio"
+					role="button"
+					style="cursor: pointer;"
+				>
+					<icon name="bi:file-earmark-music-fill"/>
+				</a>
+				<chat-audio-player v-else :audio-url="audio?.url || ''" :loading="message.audioGenerateLoading"/>
 			</div>
 
 			<div class="rim-rich-content" v-if="message.rims">
 				<template v-for="r in message.rims">
 					<div class="rim-image" v-if="r.rimType === 'image'">
-						<chat-rim-image :rim="r" />
+						<chat-rim-image :rim="r"/>
 					</div>
 
 					<div class="rim-youtube-video" v-else-if="r.rimType === 'video'">
-						<chat-rim-youtube-video :rim="r" />
+						<chat-rim-youtube-video :rim="r"/>
 					</div>
 
 					<div class="rim-rich-wrapper" v-else-if="r.rimType === 'wallet'">
-						<chat-rim-wallet-info :rim="r" />
+						<chat-rim-wallet-info :rim="r"/>
 					</div>
 
 					<div class="rim-rich-wrapper" v-else-if="r.rimType === 'blink'">
-						<chat-rim-blink :rim="r" />
+						<chat-rim-blink :rim="r"/>
 					</div>
 
 					<div v-else>
@@ -40,7 +50,7 @@
 				</template>
 			</div>
 			<div class="rim-textual-content">
-				<div v-html="html" />
+				<div v-html="html"/>
 			</div>
 			<div class="rim-actions">
 				<div class="actions">
@@ -50,7 +60,7 @@
 						@click.prevent="chat.openWis(message.uid)"
 						v-if="message.role === 'assistant' && typeof message.rims !== 'undefined' && message.rims.length"
 					>
-						<icon name="material-symbols:right-panel-close-rounded" />
+						<icon name="material-symbols:right-panel-close-rounded"/>
 					</a>
 				</div>
 
@@ -61,7 +71,8 @@
 </template>
 
 <script setup>
-	import { marked } from 'marked';
+	import {marked} from 'marked';
+	import {useDateFormat} from '@vueuse/core';
 
 	const chat = useChatStore();
 
@@ -72,13 +83,35 @@
 		},
 	});
 
+	const generateAudio = async (message) => {
+		try {
+			message.audioGenerateLoading = true;
+			await chat.generateAudio(message);
+		} catch (e) {
+			console.error(e);
+		} finally {
+			message.audioGenerateLoading = false;
+		}
+	};
+
 	// compute the html from the markdown
 	const html = computed(() => marked.parse(props.message.text));
 
 	// parse timestamp to get the time
 	const formattedTime = computed(() => {
 		const date = new Date(props.message.timestamp);
-		return date.toLocaleTimeString();
+		const now = new Date();
+
+		// Use useDateFormat to give it a friendly and nice format
+		if (date.toDateString() === now.toDateString()) {
+			return useDateFormat(date, 'HH:mm').value; // "Today at 14:35"
+		} else if (
+			date.toDateString() === new Date(now.setDate(now.getDate() - 1)).toDateString()
+		) {
+			return `Yesterday at ${useDateFormat(date, 'HH:mm').value}`;
+		} else {
+			return useDateFormat(date, 'MMMM DD, YYYY').value; // "October 3, 2023"
+		}
 	});
 
 	/// create a compued propertie to search on the key variants, the one with type audio
@@ -90,6 +123,8 @@
 
 <!--suppress SassScssResolvedByNameOnly -->
 <style lang="sass" scoped>
+	.generate-audio-wrapper
+		cursor: pointer
 
 	.ratio > *
 		position: absolute

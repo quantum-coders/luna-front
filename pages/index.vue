@@ -54,7 +54,7 @@
 	};
 
 	onMounted(() => {
-		useChat().initializeChat();
+		// useChat().initializeChat();
 	});
 
 </script>

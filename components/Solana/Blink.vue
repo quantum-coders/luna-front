@@ -189,12 +189,10 @@
 	const postBlink = async (action) => {
 
 		action.loading = true;
-		console.log(action);
 		let url = '';
 
 		// if action.href does not start with http, use the domain from b
 		if(!action.href.startsWith('http')) {
-			console.log(useRuntimeConfig().public.baseURL + action.href, props.blinkUrl || {});
 			url = new URL(useRuntimeConfig().public.baseURL + action.href, props.blinkUrl).href;
 
 		} else {
@@ -205,7 +203,6 @@
 		if(action.parameters) {
 			// loop through the parameters
 			for(const p of action.parameters) {
-				console.log(p.name, p.value);
 				// replace the parameter in the url
 				url = url.replace(`%7B${ p.name }%7D`, p.value);
 				url = url.replace(`{${ p.name }}`, p.value);

@@ -41,7 +41,6 @@
 	});
 
 	const toggleValue = (event) => {
-		console.log('Toggle Switch', event.target.checked);
 		emit('update', event.target.checked);
 		emit('input', event.target.checked);
 		emit('update:modelValue', event.target.checked);

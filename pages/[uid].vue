@@ -39,27 +39,12 @@
 <script setup>
 	import { useWallet, WalletMultiButton } from 'solana-wallets-vue';
 	definePageMeta({ layout: 'luna', middleware: 'auth' });
-
 	const solana = useSolanaStore();
-
 	const styles = {
 		'--inner-wrapper-width': '1000px',
 	};
-
-
-
 	const chat = useChatStore();
-
-	const connectWallet = () => {
-
-		// click .swv-button-trigger
-		document.querySelector('.swv-button-trigger').click();
-	};
-
 	await useChat().getChat();
-	onMounted( async () => {
-		await useChat().getChatHistory();
-	});
 
 </script>
 

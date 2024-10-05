@@ -45,8 +45,6 @@ export const useSolanaStore = defineStore('solanaStore', () => {
 			});
 		});
 
-		console.log('authorizationResult', authorizationResult);
-		console.log('Connected to: ' + authorizationResult.accounts[0].address);
 		mobileWallet.value = authorizationResult;
 
 		const authorizedPubkey = new PublicKey(toByteArray(mobileWallet.value.accounts[0].address));
@@ -68,7 +66,6 @@ export const useSolanaStore = defineStore('solanaStore', () => {
 
 				await transact(async (wallet) => {
 
-					console.log('wallet', mobileWallet.value.auth_token);
 
 					await wallet.authorize({
 						identity: APP_IDENTITY,
@@ -80,9 +77,6 @@ export const useSolanaStore = defineStore('solanaStore', () => {
 						},
 						auth_token: mobileWallet.value.auth_token,
 					});
-
-					console.log('wallet', wallet);
-					console.log('encodedTransaction', encodedTransaction);
 
 					let signedTransaction = await wallet.signTransactions({
 						payloads: [encodedTransaction],
@@ -121,8 +115,6 @@ export const useSolanaStore = defineStore('solanaStore', () => {
 			}
 
 			try {
-				console.log('Checking connection');
-				console.log('Provider', provider);
 				const swapTransactionBuf = Buffer.from(encodedTransaction, 'base64');
 				const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
 				const tx = await provider.signTransaction(transaction
@@ -130,7 +122,6 @@ export const useSolanaStore = defineStore('solanaStore', () => {
 						skipPreflight: true,
 						commitment: 'confirmed',
 					});
-				console.log('tx', tx);
 
 				const signature = await connection.sendRawTransaction(tx.serialize());
 				successToast('Transaction confirmed' + `https://solscan.io/tx/${ signature }`);

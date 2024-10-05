@@ -1,7 +1,7 @@
 export const useAuth = () => {
 
 	const authUser = useAuthUser();
-
+	const chat = useChatStore();
 	const setUser = (user) => {
 		if(process.client && user && user.accessToken) localStorage.setItem('accessToken', user.accessToken);
 		authUser.value = user;
@@ -30,8 +30,9 @@ export const useAuth = () => {
 	const logout = async () => {
 		// TODO: Check how to use cookies instead of localStorage
 		if(process.client) localStorage.setItem('accessToken', null);
-		setUser(false);
 
+		setUser(false);
+		chat.cleanUserChats();
 		navigateTo('/');
 	};
 

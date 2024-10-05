@@ -114,7 +114,6 @@
 				return allowed.includes(f.type);
 			});
 
-			console.log(allowedFiles);
 
 			if(allowedFiles.length !== files.length) {
 				console.warn('Some files were not allowed');
@@ -136,17 +135,14 @@
 	};
 
 	const dragEnter = () => {
-		console.log('dragEnter');
 		droppable.value = true;
 	};
 
 	const dragLeave = () => {
-		console.log('dragLeave');
 		droppable.value = false;
 	};
 
 	const dragOver = () => {
-		console.log('dragOver');
 	};
 
 	const resetFiles = () => {

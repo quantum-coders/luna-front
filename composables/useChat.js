@@ -1,11 +1,12 @@
 import {useChatStore} from "~/stores/chat";
 
 export const useChat = () => {
+
 	const router = useRouter()
 	const route = useRoute()
 	const uid = ref(null)
+	const chat = useChatStore();
 	const initializeChat = async () => {
-
 		try {
 			if (router.currentRoute.value.params.uid) {
 				uid.value = router.currentRoute.value.params.uid
@@ -22,8 +23,11 @@ export const useChat = () => {
 				}
 				console.info("Response from creating chat", response.data.value.data)
 				uid.value = response.data.value.data.uid
-
-				await router.push(`/${uid.value}`)
+				if (window.history.replaceState) {
+					const newUrl = `/${uid.value}`;
+					window.history.replaceState(null, '', newUrl);
+				}
+				return uid.value;
 			}
 		} catch (err) {
 			console.error('Error initializing chat:', err)
@@ -58,14 +62,14 @@ export const useChat = () => {
 		}
 	}
 
-	const getChatHistory = async (limit = 10, offset = 0) => {
+	const getChatHistory = async (limit = -1, offset = 0) => {
 		const route = useRoute(); // Hook para acceder a los parámetros de la ruta
 		const uid = route.params.uid;
 		/// dispatch using chatStore.messageLoading to true
-		useChatStore().$patch({ messagesLoading: true });
+		useChatStore().$patch({messagesLoading: true});
 		if (!uid) {
-			useChatStore().$patch({ errorMessages: 'No chat UID available in the route.' });
-			useChatStore().$patch({ messagesLoading: false });
+			useChatStore().$patch({errorMessages: 'No chat UID available in the route.'});
+			useChatStore().$patch({messagesLoading: false});
 			return {chatData: null, error: 'Failed to get chat history. Please try again.'};
 		}
 
@@ -82,20 +86,20 @@ export const useChat = () => {
 			console.info("Response from getting chat history", response);
 
 			if (!response.data.value) {
-				useChatStore().$patch({ errorMessages: 'Failed to get chat history. Please try again.' });
+				useChatStore().$patch({errorMessages: 'Failed to get chat history. Please try again.'});
 				return {chatData: null, error: 'Failed to get chat history. Please try again.'};
 			}
 
-			useChatStore().$patch({ messages: response.data.value.data || [] });
+			useChatStore().$patch({messages: response.data.value.data || []});
 
 			return {chatData: response.data.value, error: null};
 		} catch (err) {
 			console.error('Error getting chat history:', err);
-			useChatStore().$patch({ errorMessages: 'Failed to get chat history. Please try again.' });
-			useChatStore().$patch({ messagesLoading: false });
+			useChatStore().$patch({errorMessages: 'Failed to get chat history. Please try again.'});
+			useChatStore().$patch({messagesLoading: false});
 			return {chatData: null, error: 'Failed to get chat history. Please try again.'};
 		} finally {
-			useChatStore().$patch({ messagesLoading: false });
+			useChatStore().$patch({messagesLoading: false});
 		}
 	};
 

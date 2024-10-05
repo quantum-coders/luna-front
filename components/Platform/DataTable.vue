@@ -284,7 +284,6 @@
 			const field = props.fields[index];
 			const localWidth = localStorage.getItem(`data-table-${ props.endpoint }-${ field.value }-width`);
 
-			console.log(field.value, field, localWidth, field.width);
 
 			if(field.width === 'auto') {
 				field.width = 'auto';
@@ -298,11 +297,9 @@
 			}
 		});
 
-		console.log(cols.value);
 	});
 
 	const check = function(id) {
-		console.log('check', id);
 		if(checkedRows.value.includes(id)) {
 			checkedRows.value = checkedRows.value.filter((row) => row !== id);
 		} else {
@@ -341,7 +338,6 @@
 	};
 
 	const changePage = function(page) {
-		console.log('changePage', page);
 		currentPage.value = page;
 	};
 

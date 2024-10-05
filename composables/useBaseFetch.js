@@ -10,7 +10,6 @@ export const useBaseFetch = (request, opts = {}) => {
 	if(authUser.value) {
 		// get authTokens from localStorage
 		const token = localStorage.getItem('accessToken');
-		console.log('token', token);
 
 		if(token) baseOpts.headers = [['Authorization', `Bearer ${ token }`]];
 	}

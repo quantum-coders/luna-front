@@ -2,17 +2,17 @@
 	<div :style="styles" class="section-wrapper">
 		<img class="background" src="/images/background.jpg" alt="">
 
-		<layout-header />
+		<layout-header/>
 
 		<div class="page-wrapper">
-			<layout-sidebar />
-			<nuxt-page />
+			<layout-sidebar/>
+			<nuxt-page/>
 		</div>
 	</div>
 </template>
 
 <script setup>
-	const styles = { '--inner-wrapper-width': '1000px' };
+	const styles = {'--inner-wrapper-width': '1000px'};
 </script>
 
 <!--suppress SassScssResolvedByNameOnly -->

@@ -50,7 +50,6 @@
 
 	const addingOption =(searchQuery, id) => {
 
-		console.log(searchQuery, id);
 	}
 
 	const { errorToast, successToast } = usePrettyToast();
@@ -146,7 +145,6 @@
 			error,
 		} = await useBaseFetch(`/${ props.entity }?${ new URLSearchParams(params) }`, { method: 'GET' });
 		if(error.value) {
-			console.log('WAX');
 			//errorToast(error.value);
 		}
 		if(data.value) {

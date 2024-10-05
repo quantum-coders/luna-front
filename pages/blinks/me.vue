@@ -13,7 +13,6 @@
 
 	const deleteLink = (id) => {
 		// Implementar lógica de eliminación aquí
-		console.log(`Deleting blink with id: ${id}`);
 	};
 </script>
 

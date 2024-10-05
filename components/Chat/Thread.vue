@@ -50,20 +50,27 @@
 <script setup>
 	const chat = useChatStore();
 	const route = useRoute();
-	const uid = route.params.uid
-	console.info("uid", uid);
+	let uid = route.params.uid
 	const addMessage = async (message) => {
+		let isInitialMessage = !uid;
 		if(message) {
-			chat.addMessage({
+			const msg = await chat.addMessage({
 				role: 'user',
 				text: message,
-			});
-
-			await chat.sendMessage(message, uid);
+			}, isInitialMessage);
+			if(!uid) {
+				uid = msg.uidChat;
+			}
+			chat.sendMessage(msg, uid);
 			await nextTick();
 			chat.scrollToBottom();
 		}
 	};
+
+	onMounted(async () => {
+		await useChat().getChatHistory();
+		chat.scrollToBottom();
+	});
 </script>
 
 <!--suppress SassScssResolvedByNameOnly -->

@@ -43,6 +43,7 @@
 
 	const solanaStore = useSolanaStore();
 	const config = useRuntimeConfig();
+	const chat = useChatStore();
 	const authStore = useAuthStore();
 	const { logout } = useAuth();
 	initWallet({ autoConnect: true });
@@ -82,6 +83,12 @@
 			}
 		} else {
 			localStorage.removeItem('accessToken');
+		}
+
+		try{
+			await chat.fetchUserChats();
+		}catch (error) {
+			console.error('fetchChats: Error fetching chats:', error);
 		}
 	});
 </script>
