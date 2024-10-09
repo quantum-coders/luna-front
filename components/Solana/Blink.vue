@@ -7,9 +7,8 @@
 		<div class="blink-card" v-if="blink" :class="mode">
 			<div class="card-connect" v-if="!!cardConnect">
 				<div class="d-none d-sm-block">
-					<solana-wallet-connect />
+					<solana-wallet-connect/>
 				</div>
-
 				<div class="mobile-connect d-block d-sm-none">
 					<a
 						href="#"
@@ -26,7 +25,7 @@
 
 			<div class="blink-image mb-2">
 				<slot name="image"></slot>
-				<img :src="blink.icon" alt="Blink" />
+				<img :src="blink.icon" alt="Blink"/>
 			</div>
 
 			<div class="blink-data">
@@ -48,6 +47,17 @@
 							class="action"
 							:class="`parameters-count-${ a.parameters.length }`"
 						>
+							<template
+								v-if="a.parameters && a.parameters.find(param => param.name === 'inputMint') && a.parameters.find(param => param.name === 'outputMint')">
+								<solana-quote v-if="tokenStore.quote"/>
+							</template>
+							<template v-if="a.parameters && a.parameters.find(param => param.name === 'inputMint') && a.parameters.find(param => param.name === 'outputMint')
+							&& a.href === '/blinks/create-limit-order?=inputMint={inputMint}&outputMint={outputMint}&inAmount={inAmount}&outAmount={outAmount}&expiredAt={expiredAt}'
+							">
+								<solana-limit-order-profit v-if="tokenStore.quote"
+									:profitPercentage="tokenStore.profitPercentage"
+								/>
+							</template>
 							<template v-if="!a.parameters">
 								<button
 									@click.prevent="postBlink(a)"
@@ -56,23 +66,42 @@
 								>{{ a.label }}
 								</button>
 							</template>
-
 							<template v-else>
 								<!-- input group -->
 								<div class="input-group">
 									<template v-for="p in a.parameters">
 										<!-- label -->
 										<div class="d-flex flex-grow-1" v-if="p.name ==='metadata'">
-										<solana-metadata @update-metadata="p.value =  $event" />
+											<solana-metadata @update-metadata="p.value =  $event"/>
 										</div>
-										<div class="d-flex flex-grow-1" v-if="!p.hidden && p.name !== 'metadata'">
-										<span
-											v-if="!!p.preLabel"
-											class="input-group-text"
-											id="basic-addon1"
-										>{{ p.preLabel }}</span>
+										<div class="d-flex flex-grow-1" v-if="p.name === 'inputMint'">
+											<solana-token-selector
+												v-model="p.value"
+											/>
+										</div>
+										<div class="d-flex justify-content-center pb-2" v-if="p.name === 'outputMint'">
+											<button
+												class="btn btn-primary"
+												@click="swapTokensOrder"
+											>
+												<icon name="bi:arrow-left-right"/>
+											</button>
+										</div>
+
+										<div class="d-flex flex-grow-1" v-if="p.name === 'outputMint'">
+											<solana-token-selector
+												v-model="p.value"
+											/>
+										</div>
+										<div class="d-flex flex-grow-1"
+											 v-if="!p.hidden && p.name !== 'metadata' && p.name !== 'inputMint' && p.name !== 'outputMint'">
+											<span
+												v-if="!!p.preLabel"
+												class="input-group-text"
+												id="basic-addon1"
+											>{{ p.preLabel }}</span>
 											<input
-												type="text"
+												:type="getType(p)"
 												class="form-control"
 												:placeholder="p.label"
 												v-model="p.value"
@@ -103,9 +132,9 @@
 
 			<p class="powered">
 				Powered by
-				<icon name="token-branded:solana" />
+				<icon name="token-branded:solana"/>
 				Blinks and
-				<icon name="bi:moon-stars-fill" />
+				<icon name="bi:moon-stars-fill"/>
 				.AI
 			</p>
 		</div>
@@ -113,11 +142,9 @@
 </template>
 
 <script setup>
-	import { PublicKey } from '@solana/web3.js';
 	const txResult = ref('');
-
 	const solanaStore = useSolanaStore();
-
+	const tokenStore = useTokenStore();
 	const emit = defineEmits(['transactionSuccessful']);
 
 	const props = defineProps({
@@ -153,6 +180,24 @@
 
 	const blink = ref(null);
 
+
+	/// getType if it is inAmount or inputAmount is number
+	const getType = (param) => {
+		if (param.name === 'inAmount' || param.name === 'outAmount') {
+			return 'number';
+		}
+		if(param.name === 'expiredAt'){
+			return 'datetime-local';
+		}
+		return 'text';
+	};
+	const swapTokensOrder = () => {
+		const inputMint = blink.value.links.actions[0].parameters.find(param => param.name === 'inputMint')
+		const outputMint = blink.value.links.actions[0].parameters.find(param => param.name === 'outputMint')
+		const temp = inputMint.value
+		inputMint.value = outputMint.value
+		outputMint.value = temp
+	}
 	// calculate the complementary color from the primary color, black or white
 	const complementaryColor = computed(() => {
 		const hex = props.primaryColor.replace('#', '');
@@ -166,7 +211,7 @@
 	// fetch the b
 	const fetchBlink = async () => {
 
-		if(Object.keys(props.blinkObject).length > 0) {
+		if (Object.keys(props.blinkObject).length > 0) {
 			blink.value = props.blinkObject;
 			return;
 		}
@@ -176,9 +221,9 @@
 	};
 
 	const solveButtonDisabled = (action) => {
-		if(action.parameters) {
-			for(const p of action.parameters) {
-				if(p.required && !p.value) {
+		if (action.parameters) {
+			for (const p of action.parameters) {
+				if (p.required && !p.value) {
 					return true;
 				}
 			}
@@ -192,7 +237,7 @@
 		let url = '';
 
 		// if action.href does not start with http, use the domain from b
-		if(!action.href.startsWith('http')) {
+		if (!action.href.startsWith('http')) {
 			url = new URL(useRuntimeConfig().public.baseURL + action.href, props.blinkUrl).href;
 
 		} else {
@@ -200,12 +245,13 @@
 		}
 
 		// if parameters are present
-		if(action.parameters) {
+		if (action.parameters) {
 			// loop through the parameters
-			for(const p of action.parameters) {
+			for (const p of action.parameters){
+				console.info("------------------> Parameter", p)
 				// replace the parameter in the url
-				url = url.replace(`%7B${ p.name }%7D`, p.value);
-				url = url.replace(`{${ p.name }}`, p.value);
+				url = url.replace(`%7B${p.name}%7D`, p.value);
+				url = url.replace(`{${p.name}}`, p.value);
 			}
 		}
 		// uri encode the url
@@ -217,14 +263,14 @@
 			}),
 		});
 
-		if(res.error.value) {
+		if (res.error.value) {
 			console.error(res.error.value);
 			action.loading = false;
 			return;
 		}
 
 		try {
-			if(props.signTransaction) {
+			if (props.signTransaction) {
 				await props.signTransaction(res.data.value.data.transaction, action);
 
 			} else {
@@ -232,7 +278,7 @@
 				emit('transactionSuccessful', txResult.value);
 				action.loading = false;
 			}
-		} catch(e) {
+		} catch (e) {
 			console.error(e);
 			action.loading = false;
 		}
@@ -241,6 +287,28 @@
 	onMounted(() => {
 		fetchBlink();
 	});
+
+	watch(
+		() => blink.value,
+		(newBlink) => {
+			if (newBlink && newBlink.links && newBlink.links.actions) {
+				for (const action of newBlink.links.actions) {
+					const inputMint = action.parameters?.find(param => param.name === 'inputMint')?.value
+					const outputMint = action.parameters?.find(param => param.name === 'outputMint')?.value
+					tokenStore.inAmount = action.parameters?.find(param => param.name === 'inAmount')?.value || 0
+					tokenStore.outAmount = action.parameters?.find(param => param.name === 'outAmount')?.value || 0
+					if (inputMint && outputMint && tokenStore.inputToken !== inputMint && tokenStore.outputToken !== outputMint) {
+						console.info("inputMint", inputMint, "outputMint", outputMint)
+						console.info("tokenStore.inputToken?.address", tokenStore.inputToken, "tokenStore.outputToken?.address", tokenStore.outputToken)
+						tokenStore.getQuote(inputMint, outputMint)
+						break // Salimos del bucle una vez que encontramos ambos valores
+					}
+				}
+			}
+		},
+		{deep: true, immediate: true}
+	)
+
 </script>
 
 <!--suppress SassScssResolvedByNameOnly -->
